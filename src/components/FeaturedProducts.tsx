@@ -1,9 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Star, Heart } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { useNavigate } from "react-router-dom";
 import premiumKeyboard from "@/assets/premium-keyboard.jpg";
 import audioEquipment from "@/assets/audio-equipment.jpg";
 
 const FeaturedProducts = () => {
+  const { addItem } = useCart();
+  const navigate = useNavigate();
   const products = [
     {
       id: 1,
@@ -49,6 +53,16 @@ const FeaturedProducts = () => {
     },
   ];
 
+  const handleAddToCart = (product: any) => {
+    addItem({
+      id: product.id,
+      name: product.name,
+      brand: product.brand,
+      price: product.price,
+      image: product.image,
+    });
+  };
+
   return (
     <section className="py-24 bg-background">
       <div className="container mx-auto px-4">
@@ -61,7 +75,11 @@ const FeaturedProducts = () => {
               Hand-picked instruments from the world's finest manufacturers
             </p>
           </div>
-          <Button variant="outline" className="hidden md:block hover-lift">
+          <Button 
+            variant="outline" 
+            className="hidden md:block hover-lift"
+            onClick={() => navigate('/explore')}
+          >
             View All Products
           </Button>
         </div>
@@ -147,7 +165,11 @@ const FeaturedProducts = () => {
                   )}
                 </div>
 
-                <Button variant="premium" className="w-full">
+                <Button 
+                  variant="premium" 
+                  className="w-full"
+                  onClick={() => handleAddToCart(product)}
+                >
                   Add to Cart
                 </Button>
               </div>
@@ -156,7 +178,11 @@ const FeaturedProducts = () => {
         </div>
 
         <div className="text-center mt-12 md:hidden">
-          <Button variant="outline" className="hover-lift">
+          <Button 
+            variant="outline" 
+            className="hover-lift"
+            onClick={() => navigate('/explore')}
+          >
             View All Products
           </Button>
         </div>

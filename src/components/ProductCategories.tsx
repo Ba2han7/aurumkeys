@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import premiumKeyboard from "@/assets/premium-keyboard.jpg";
 import audioEquipment from "@/assets/audio-equipment.jpg";
 
 const ProductCategories = () => {
+  const navigate = useNavigate();
   const categories = [
     {
       title: "Digital Pianos",
@@ -43,9 +45,17 @@ const ProductCategories = () => {
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-dark mb-6">
             Shop by Category
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
             Explore our carefully curated selection of premium musical instruments and professional audio equipment
           </p>
+          <Button 
+            variant="premium" 
+            size="lg" 
+            onClick={() => navigate('/explore')}
+            className="hover-lift"
+          >
+            Explore Collection
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">

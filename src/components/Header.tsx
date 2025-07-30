@@ -1,16 +1,21 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Menu, Search, ShoppingCart, User, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart } from "@/contexts/CartContext";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+  const { state } = useCart();
 
   const navigation = [
-    { name: "Keyboards", href: "#keyboards" },
-    { name: "Pianos", href: "#pianos" },
-    { name: "Audio Equipment", href: "#audio" },
-    { name: "Accessories", href: "#accessories" },
-    { name: "Brands", href: "#brands" },
+    { name: "Keyboards", href: "/explore", category: "keyboards" },
+    { name: "Guitars", href: "/explore", category: "guitars" },
+    { name: "Drums", href: "/explore", category: "drums" },
+    { name: "Violins", href: "/explore", category: "violins" },
+    { name: "Audio Equipment", href: "/explore", category: "audio" },
+    { name: "Accessories", href: "/explore", category: "accessories" },
   ];
 
   return (
@@ -18,23 +23,23 @@ const Header = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center">
+          <Link to="/" className="flex items-center">
             <h1 className="text-2xl font-serif font-bold text-dark">
               AURUM
               <span className="block text-sm font-normal tracking-wider">KEYS & SOUND</span>
             </h1>
-          </div>
+          </Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navigation.map((item) => (
-              <a
+              <button
                 key={item.name}
-                href={item.href}
+                onClick={() => navigate('/explore', { state: { category: item.category } })}
                 className="text-foreground hover:text-gold transition-colors duration-300 font-medium"
               >
                 {item.name}
-              </a>
+              </button>
             ))}
           </nav>
 
@@ -46,12 +51,16 @@ const Header = () => {
             <Button variant="ghost" size="icon" className="hover-lift">
               <User className="h-5 w-5" />
             </Button>
-            <Button variant="ghost" size="icon" className="hover-lift relative">
-              <ShoppingCart className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 bg-gold text-dark text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
-                0
-              </span>
-            </Button>
+            <Link to="/cart">
+              <Button variant="ghost" size="icon" className="hover-lift relative">
+                <ShoppingCart className="h-5 w-5" />
+                {state.items.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-gold text-dark text-xs rounded-full h-5 w-5 flex items-center justify-center font-bold">
+                    {state.items.reduce((sum, item) => sum + item.quantity, 0)}
+                  </span>
+                )}
+              </Button>
+            </Link>
 
             {/* Mobile Menu Button */}
             <Button
@@ -70,14 +79,16 @@ const Header = () => {
           <div className="md:hidden border-t border-border">
             <nav className="py-4 space-y-4">
               {navigation.map((item) => (
-                <a
+                <button
                   key={item.name}
-                  href={item.href}
+                  onClick={() => {
+                    navigate('/explore', { state: { category: item.category } });
+                    setIsMenuOpen(false);
+                  }}
                   className="block text-foreground hover:text-gold transition-colors duration-300 font-medium"
-                  onClick={() => setIsMenuOpen(false)}
                 >
                   {item.name}
-                </a>
+                </button>
               ))}
             </nav>
           </div>
