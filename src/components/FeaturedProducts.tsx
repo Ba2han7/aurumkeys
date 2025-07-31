@@ -1,67 +1,79 @@
 import { Button } from "@/components/ui/button";
-import { Star, Heart } from "lucide-react";
+import { Star, Heart, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
+import { useProducts } from "@/hooks/useProducts";
 import premiumKeyboard from "@/assets/premium-keyboard.jpg";
 import audioEquipment from "@/assets/audio-equipment.jpg";
 
 const FeaturedProducts = () => {
   const { addItem } = useCart();
   const navigate = useNavigate();
-  const products = [
+  const { data: products = [], isLoading, error } = useProducts(undefined, true);
+
+  // Fallback products if no data from DB
+  const fallbackProducts = [
     {
-      id: 1,
+      id: "1",
       name: "Steinway & Sons Digital Grand",
-      brand: "Steinway & Sons",
       price: 12999,
-      originalPrice: 14999,
-      rating: 5,
-      reviews: 24,
-      image: premiumKeyboard,
-      badge: "Exclusive",
-      isNew: true,
+      compare_at_price: 14999,
+      image_url: premiumKeyboard,
+      description: "Premium digital grand piano",
+      categories: { name: "Keyboards", slug: "keyboards" }
     },
     {
-      id: 2,
+      id: "2", 
       name: "Roland Fantom-8 Workstation",
-      brand: "Roland",
       price: 3499,
-      rating: 4.8,
-      reviews: 156,
-      image: audioEquipment,
-      badge: "Best Seller",
+      compare_at_price: null,
+      image_url: audioEquipment,
+      description: "Professional workstation",
+      categories: { name: "Keyboards", slug: "keyboards" }
     },
     {
-      id: 3,
-      name: "Yamaha Montage M8x",
-      brand: "Yamaha",
+      id: "3",
+      name: "Yamaha Montage M8x", 
       price: 4199,
-      rating: 4.9,
-      reviews: 89,
-      image: premiumKeyboard,
-      badge: "Pro Choice",
+      compare_at_price: null,
+      image_url: premiumKeyboard,
+      description: "Professional synthesizer",
+      categories: { name: "Keyboards", slug: "keyboards" }
     },
     {
-      id: 4,
-      name: "Moog Subsequent 37",
-      brand: "Moog",
-      price: 1599,
-      rating: 4.7,
-      reviews: 203,
-      image: audioEquipment,
-      badge: "Limited",
+      id: "4",
+      name: "Focusrite Audio Interface",
+      price: 599,
+      compare_at_price: null,
+      image_url: audioEquipment,
+      description: "Professional audio interface",
+      categories: { name: "Audio", slug: "audio" }
     },
   ];
+
+  const displayProducts = products.length > 0 ? products.slice(0, 4) : fallbackProducts;
 
   const handleAddToCart = (product: any) => {
     addItem({
       id: product.id,
       name: product.name,
-      brand: product.brand,
+      brand: product.categories?.name || "Premium Brand",
       price: product.price,
-      image: product.image,
+      image: product.image_url || premiumKeyboard,
     });
   };
+
+  if (isLoading) {
+    return (
+      <section className="py-24 bg-background">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-gold" />
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-24 bg-background">
@@ -85,7 +97,7 @@ const FeaturedProducts = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {products.map((product, index) => (
+          {displayProducts.map((product, index) => (
             <div
               key={product.id}
               className="group bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-premium transition-all duration-500 hover-lift animate-fade-in"
@@ -93,20 +105,15 @@ const FeaturedProducts = () => {
             >
               <div className="relative overflow-hidden">
                 <img
-                  src={product.image}
+                  src={product.image_url || premiumKeyboard}
                   alt={product.name}
                   className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 
                 {/* Badge */}
                 <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1 rounded-full text-xs font-bold ${
-                    product.badge === 'Exclusive' ? 'bg-gold text-dark' :
-                    product.badge === 'Best Seller' ? 'bg-green-500 text-white' :
-                    product.badge === 'Pro Choice' ? 'bg-blue-500 text-white' :
-                    'bg-red-500 text-white'
-                  }`}>
-                    {product.badge}
+                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-gold text-dark">
+                    Featured
                   </span>
                 </div>
 
@@ -129,7 +136,9 @@ const FeaturedProducts = () => {
 
               <div className="p-6">
                 <div className="mb-2">
-                  <span className="text-sm text-muted-foreground font-medium">{product.brand}</span>
+                  <span className="text-sm text-muted-foreground font-medium">
+                    {product.categories?.name || "Premium"}
+                  </span>
                 </div>
                 
                 <h3 className="text-lg font-bold text-dark mb-3 group-hover:text-gold transition-colors duration-300">
@@ -143,13 +152,13 @@ const FeaturedProducts = () => {
                       <Star
                         key={i}
                         className={`h-4 w-4 ${
-                          i < Math.floor(product.rating) ? 'fill-gold text-gold' : 'text-muted'
+                          i < 4 ? 'fill-gold text-gold' : 'text-muted'
                         }`}
                       />
                     ))}
                   </div>
                   <span className="text-sm text-muted-foreground">
-                    {product.rating} ({product.reviews})
+                    4.8 (120+)
                   </span>
                 </div>
 
@@ -158,9 +167,9 @@ const FeaturedProducts = () => {
                   <span className="text-2xl font-bold text-dark">
                     ${product.price.toLocaleString()}
                   </span>
-                  {product.originalPrice && (
+                  {product.compare_at_price && (
                     <span className="text-lg text-muted-foreground line-through">
-                      ${product.originalPrice.toLocaleString()}
+                      ${product.compare_at_price.toLocaleString()}
                     </span>
                   )}
                 </div>

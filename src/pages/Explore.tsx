@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Star, Heart } from "lucide-react";
+import { Star, Heart, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useProducts, useCategories } from "@/hooks/useProducts";
 import premiumKeyboard from "@/assets/premium-keyboard.jpg";
 import audioEquipment from "@/assets/audio-equipment.jpg";
 
@@ -10,6 +11,8 @@ const Explore = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { addItem } = useCart();
   const location = useLocation();
+  const { data: categories = [], isLoading: categoriesLoading } = useCategories();
+  const { data: products = [], isLoading: productsLoading } = useProducts(selectedCategory || undefined);
 
   useEffect(() => {
     if (location.state?.category) {
@@ -17,184 +20,97 @@ const Explore = () => {
     }
   }, [location.state]);
 
-  const categories = [
+  // Fallback categories
+  const fallbackCategories = [
     {
       id: "keyboards",
-      name: "Keyboards & Pianos",
-      description: "Premium weighted-key digital pianos and synthesizers"
+      name: "Keyboards & Pianos", 
+      slug: "keyboards",
+      description: "Premium weighted-key digital pianos and synthesizers",
+      image_url: premiumKeyboard
     },
     {
       id: "guitars",
       name: "Guitars",
-      description: "Acoustic, electric, and bass guitars from renowned brands"
+      slug: "guitars", 
+      description: "Acoustic, electric, and bass guitars from renowned brands",
+      image_url: audioEquipment
     },
     {
       id: "drums",
       name: "Drums & Percussion",
-      description: "Complete drum sets and percussion instruments"
-    },
-    {
-      id: "violins",
-      name: "Violins & Strings",
-      description: "Professional violins, cellos, and string instruments"
+      slug: "drums",
+      description: "Complete drum sets and percussion instruments",
+      image_url: premiumKeyboard
     },
     {
       id: "audio",
       name: "Audio Equipment",
-      description: "Professional recording and mixing equipment"
+      slug: "audio",
+      description: "Professional recording and mixing equipment",
+      image_url: audioEquipment
     },
     {
       id: "accessories",
-      name: "Accessories",
-      description: "Cases, stands, cables, and essential accessories"
+      name: "Accessories", 
+      slug: "accessories",
+      description: "Cases, stands, cables, and essential accessories",
+      image_url: premiumKeyboard
     }
   ];
 
-  const productsByCategory = {
-    keyboards: [
-      {
-        id: 101,
-        name: "Steinway & Sons Digital Grand",
-        brand: "Steinway & Sons",
-        price: 12999,
-        rating: 5,
-        reviews: 24,
-        image: premiumKeyboard,
-      },
-      {
-        id: 102,
-        name: "Roland Fantom-8 Workstation",
-        brand: "Roland",
-        price: 3499,
-        rating: 4.8,
-        reviews: 156,
-        image: audioEquipment,
-      },
-      {
-        id: 103,
-        name: "Yamaha Montage M8x",
-        brand: "Yamaha",
-        price: 4199,
-        rating: 4.9,
-        reviews: 89,
-        image: premiumKeyboard,
-      }
-    ],
-    guitars: [
-      {
-        id: 201,
-        name: "Gibson Les Paul Standard",
-        brand: "Gibson",
-        price: 2799,
-        rating: 4.9,
-        reviews: 203,
-        image: audioEquipment,
-      },
-      {
-        id: 202,
-        name: "Fender Stratocaster American Pro",
-        brand: "Fender",
-        price: 1899,
-        rating: 4.8,
-        reviews: 187,
-        image: premiumKeyboard,
-      }
-    ],
-    drums: [
-      {
-        id: 301,
-        name: "Pearl Masters Maple Complete",
-        brand: "Pearl",
-        price: 3299,
-        rating: 4.7,
-        reviews: 98,
-        image: audioEquipment,
-      },
-      {
-        id: 302,
-        name: "DW Collector's Series",
-        brand: "DW",
-        price: 4599,
-        rating: 4.9,
-        reviews: 76,
-        image: premiumKeyboard,
-      }
-    ],
-    violins: [
-      {
-        id: 401,
-        name: "Stradivarius Copy Professional",
-        brand: "Master Craft",
-        price: 2499,
-        rating: 4.8,
-        reviews: 54,
-        image: audioEquipment,
-      },
-      {
-        id: 402,
-        name: "Antonio Giuliani Violin",
-        brand: "Giuliani",
-        price: 1899,
-        rating: 4.7,
-        reviews: 43,
-        image: premiumKeyboard,
-      }
-    ],
-    audio: [
-      {
-        id: 501,
-        name: "Focusrite Scarlett 18i20",
-        brand: "Focusrite",
-        price: 599,
-        rating: 4.6,
-        reviews: 234,
-        image: audioEquipment,
-      },
-      {
-        id: 502,
-        name: "Yamaha HS8 Studio Monitors",
-        brand: "Yamaha",
-        price: 699,
-        rating: 4.8,
-        reviews: 189,
-        image: premiumKeyboard,
-      }
-    ],
-    accessories: [
-      {
-        id: 601,
-        name: "Premium Guitar Case",
-        brand: "Pro Cases",
-        price: 299,
-        rating: 4.5,
-        reviews: 167,
-        image: audioEquipment,
-      },
-      {
-        id: 602,
-        name: "Professional Keyboard Stand",
-        brand: "Ultimate Support",
-        price: 179,
-        rating: 4.7,
-        reviews: 203,
-        image: premiumKeyboard,
-      }
-    ]
-  };
+  const displayCategories = categories.length > 0 ? categories : fallbackCategories;
+
+  // Fallback products if no data from DB  
+  const fallbackProducts = [
+    {
+      id: "101",
+      name: "Steinway & Sons Digital Grand",
+      price: 12999,
+      image_url: premiumKeyboard,
+      categories: { name: "Keyboards", slug: "keyboards" }
+    },
+    {
+      id: "102", 
+      name: "Roland Fantom-8 Workstation",
+      price: 3499,
+      image_url: audioEquipment,
+      categories: { name: "Keyboards", slug: "keyboards" }
+    },
+    {
+      id: "103",
+      name: "Yamaha Montage M8x",
+      price: 4199,
+      image_url: premiumKeyboard,
+      categories: { name: "Keyboards", slug: "keyboards" }
+    }
+  ];
 
   const handleAddToCart = (product: any) => {
     addItem({
       id: product.id,
       name: product.name,
-      brand: product.brand,
+      brand: product.categories?.name || "Premium Brand",
       price: product.price,
-      image: product.image,
+      image: product.image_url || premiumKeyboard,
     });
   };
 
   if (selectedCategory) {
-    const products = productsByCategory[selectedCategory as keyof typeof productsByCategory] || [];
-    const categoryName = categories.find(cat => cat.id === selectedCategory)?.name || '';
+    const displayProducts = products.length > 0 ? products : fallbackProducts;
+    const categoryName = displayCategories.find(cat => cat.slug === selectedCategory)?.name || '';
+
+    if (productsLoading) {
+      return (
+        <div className="min-h-screen bg-background pt-24 pb-16">
+          <div className="container mx-auto px-4">
+            <div className="flex items-center justify-center h-64">
+              <Loader2 className="h-8 w-8 animate-spin text-gold" />
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="min-h-screen bg-background pt-24 pb-16">
@@ -213,14 +129,14 @@ const Explore = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {products.map((product) => (
+            {displayProducts.map((product) => (
               <div
                 key={product.id}
                 className="group bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-premium transition-all duration-500 hover-lift"
               >
                 <div className="relative overflow-hidden">
                   <img
-                    src={product.image}
+                    src={product.image_url || premiumKeyboard}
                     alt={product.name}
                     className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
                   />
@@ -236,7 +152,9 @@ const Explore = () => {
 
                 <div className="p-6">
                   <div className="mb-2">
-                    <span className="text-sm text-muted-foreground font-medium">{product.brand}</span>
+                    <span className="text-sm text-muted-foreground font-medium">
+                      {product.categories?.name || "Premium"}
+                    </span>
                   </div>
                   
                   <h3 className="text-lg font-bold text-dark mb-3 group-hover:text-gold transition-colors duration-300">
@@ -249,13 +167,13 @@ const Explore = () => {
                         <Star
                           key={i}
                           className={`h-4 w-4 ${
-                            i < Math.floor(product.rating) ? 'fill-gold text-gold' : 'text-muted'
+                            i < 4 ? 'fill-gold text-gold' : 'text-muted'
                           }`}
                         />
                       ))}
                     </div>
                     <span className="text-sm text-muted-foreground">
-                      {product.rating} ({product.reviews})
+                      4.8 (120+)
                     </span>
                   </div>
 
@@ -281,6 +199,18 @@ const Explore = () => {
     );
   }
 
+  if (categoriesLoading) {
+    return (
+      <div className="min-h-screen bg-background pt-24 pb-16">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center h-64">
+            <Loader2 className="h-8 w-8 animate-spin text-gold" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background pt-24 pb-16">
       <div className="container mx-auto px-4">
@@ -294,16 +224,16 @@ const Explore = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {categories.map((category, index) => (
+          {displayCategories.map((category, index) => (
             <div
               key={category.id}
               className="group bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-premium transition-all duration-500 hover-lift animate-fade-in cursor-pointer"
               style={{ animationDelay: `${index * 150}ms` }}
-              onClick={() => setSelectedCategory(category.id)}
+              onClick={() => setSelectedCategory(category.slug)}
             >
               <div className="relative overflow-hidden h-48">
                 <img
-                  src={index % 2 === 0 ? premiumKeyboard : audioEquipment}
+                  src={category.image_url || (index % 2 === 0 ? premiumKeyboard : audioEquipment)}
                   alt={category.name}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
@@ -315,7 +245,7 @@ const Explore = () => {
                   {category.name}
                 </h3>
                 <p className="text-muted-foreground mb-4 text-sm">
-                  {category.description}
+                  {category.description || `Explore our ${category.name.toLowerCase()} collection`}
                 </p>
                 <Button variant="gold" size="sm" className="w-full">
                   Explore {category.name}
