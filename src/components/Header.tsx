@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, Search, ShoppingCart, User, X, LogOut } from "lucide-react";
+import { Menu, Search, ShoppingCart, User, X, LogOut, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
@@ -31,6 +31,7 @@ const Header = () => {
     { name: "Violins", href: "/explore", category: "violins" },
     { name: "Audio Equipment", href: "/explore", category: "audio" },
     { name: "Accessories", href: "/explore", category: "accessories" },
+    { name: "Contact", href: "/contact", category: null },
   ];
 
   return (
@@ -48,13 +49,23 @@ const Header = () => {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
             {navigation.map((item) => (
-              <button
-                key={item.name}
-                onClick={() => navigate('/explore', { state: { category: item.category } })}
-                className="text-foreground hover:text-gold transition-colors duration-300 font-medium"
-              >
-                {item.name}
-              </button>
+              item.category ? (
+                <button
+                  key={item.name}
+                  onClick={() => navigate('/explore', { state: { category: item.category } })}
+                  className="text-foreground hover:text-gold transition-colors duration-300 font-medium"
+                >
+                  {item.name}
+                </button>
+              ) : (
+                <Link
+                  key={item.name}
+                  to={item.href}
+                  className="text-foreground hover:text-gold transition-colors duration-300 font-medium"
+                >
+                  {item.name}
+                </Link>
+              )
             ))}
           </nav>
 
@@ -77,6 +88,12 @@ const Header = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link to="/admin" className="flex items-center">
+                      <Settings className="mr-2 h-4 w-4" />
+                      Admin Panel
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign Out
@@ -118,16 +135,27 @@ const Header = () => {
           <div className="md:hidden border-t border-border">
             <nav className="py-4 space-y-4">
               {navigation.map((item) => (
-                <button
-                  key={item.name}
-                  onClick={() => {
-                    navigate('/explore', { state: { category: item.category } });
-                    setIsMenuOpen(false);
-                  }}
-                  className="block text-foreground hover:text-gold transition-colors duration-300 font-medium"
-                >
-                  {item.name}
-                </button>
+                item.category ? (
+                  <button
+                    key={item.name}
+                    onClick={() => {
+                      navigate('/explore', { state: { category: item.category } });
+                      setIsMenuOpen(false);
+                    }}
+                    className="block text-foreground hover:text-gold transition-colors duration-300 font-medium"
+                  >
+                    {item.name}
+                  </button>
+                ) : (
+                  <Link
+                    key={item.name}
+                    to={item.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="block text-foreground hover:text-gold transition-colors duration-300 font-medium"
+                  >
+                    {item.name}
+                  </Link>
+                )
               ))}
             </nav>
           </div>
