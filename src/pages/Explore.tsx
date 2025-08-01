@@ -4,8 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Star, Heart, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useProducts, useCategories } from "@/hooks/useProducts";
+import BackButton from "@/components/BackButton";
 import premiumKeyboard from "@/assets/premium-keyboard.jpg";
 import audioEquipment from "@/assets/audio-equipment.jpg";
+import yamahaPiano from "@/assets/yamaha-piano.jpg";
+import electricGuitar from "@/assets/electric-guitar.jpg";
+import drumKit from "@/assets/drum-kit.jpg";
+import violin from "@/assets/violin.jpg";
+import studioMic from "@/assets/studio-mic.jpg";
+import synthesizer from "@/assets/synthesizer.jpg";
 
 const Explore = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -116,13 +123,11 @@ const Explore = () => {
       <div className="min-h-screen bg-background pt-24 pb-16">
         <div className="container mx-auto px-4">
           <div className="mb-8">
-            <Button 
-              variant="outline" 
+            <BackButton 
+              label="Back to Categories"
               onClick={() => setSelectedCategory(null)}
               className="mb-4"
-            >
-              ← Back to Categories
-            </Button>
+            />
             <h1 className="text-4xl md:text-5xl font-serif font-bold text-dark mb-4">
               {categoryName}
             </h1>

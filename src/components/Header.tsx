@@ -10,9 +10,11 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
+import SearchDialog from "./SearchDialog";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const navigate = useNavigate();
   const { state } = useCart();
   const { user, signOut } = useAuth();
@@ -58,7 +60,12 @@ const Header = () => {
 
           {/* Right Side Icons */}
           <div className="flex items-center space-x-4">
-            <Button variant="ghost" size="icon" className="hover-lift">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="hover-lift"
+              onClick={() => setIsSearchOpen(true)}
+            >
               <Search className="h-5 w-5" />
             </Button>
             
@@ -126,6 +133,8 @@ const Header = () => {
           </div>
         )}
       </div>
+      
+      <SearchDialog open={isSearchOpen} onOpenChange={setIsSearchOpen} />
     </header>
   );
 };

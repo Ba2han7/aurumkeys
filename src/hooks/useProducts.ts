@@ -28,9 +28,9 @@ export interface Category {
   image_url: string | null;
 }
 
-export const useProducts = (categorySlug?: string, featured?: boolean) => {
+export const useProducts = (categorySlug?: string, featured?: boolean, searchQuery?: string) => {
   return useQuery({
-    queryKey: ['products', categorySlug, featured],
+    queryKey: ['products', categorySlug, featured, searchQuery],
     queryFn: async () => {
       let query = supabase
         .from('products')
@@ -49,6 +49,10 @@ export const useProducts = (categorySlug?: string, featured?: boolean) => {
 
       if (categorySlug) {
         query = query.eq('categories.slug', categorySlug);
+      }
+
+      if (searchQuery) {
+        query = query.or(`name.ilike.%${searchQuery}%, description.ilike.%${searchQuery}%`);
       }
 
       const { data, error } = await query.order('created_at', { ascending: false });
