@@ -16,8 +16,10 @@ const FeaturedProducts = () => {
     {
       id: "1",
       name: "Steinway & Sons Digital Grand",
+      slug: "steinway-digital-grand",
       price: 12999,
       compare_at_price: 14999,
+      discount_percentage: null,
       image_url: premiumKeyboard,
       description: "Premium digital grand piano",
       categories: { name: "Keyboards", slug: "keyboards" }
@@ -25,17 +27,21 @@ const FeaturedProducts = () => {
     {
       id: "2", 
       name: "Roland Fantom-8 Workstation",
+      slug: "roland-fantom-8",
       price: 3499,
       compare_at_price: null,
+      discount_percentage: null,
       image_url: audioEquipment,
       description: "Professional workstation",
       categories: { name: "Keyboards", slug: "keyboards" }
     },
     {
       id: "3",
-      name: "Yamaha Montage M8x", 
+      name: "Yamaha Montage M8x",
+      slug: "yamaha-montage-m8x",
       price: 4199,
       compare_at_price: null,
+      discount_percentage: null,
       image_url: premiumKeyboard,
       description: "Professional synthesizer",
       categories: { name: "Keyboards", slug: "keyboards" }
@@ -43,8 +49,10 @@ const FeaturedProducts = () => {
     {
       id: "4",
       name: "Focusrite Audio Interface",
+      slug: "focusrite-audio-interface",
       price: 599,
       compare_at_price: null,
+      discount_percentage: null,
       image_url: audioEquipment,
       description: "Professional audio interface",
       categories: { name: "Audio", slug: "audio" }
@@ -54,11 +62,15 @@ const FeaturedProducts = () => {
   const displayProducts = products.length > 0 ? products.slice(0, 4) : fallbackProducts;
 
   const handleAddToCart = (product: any) => {
+    const discountedPrice = product.discount_percentage 
+      ? product.price * (1 - product.discount_percentage / 100)
+      : product.price;
+    
     addItem({
       id: product.id,
       name: product.name,
       brand: product.categories?.name || "Premium Brand",
-      price: product.price,
+      price: discountedPrice,
       image: product.image_url || premiumKeyboard,
     });
   };
@@ -97,7 +109,13 @@ const FeaturedProducts = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {displayProducts.map((product, index) => (
+          {displayProducts.map((product, index) => {
+            const discountedPrice = product.discount_percentage 
+              ? product.price * (1 - product.discount_percentage / 100)
+              : product.price;
+            const savings = product.price - discountedPrice;
+            
+            return (
             <div
               key={product.id}
               className="group bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-premium transition-all duration-500 hover-lift animate-fade-in"
@@ -107,14 +125,21 @@ const FeaturedProducts = () => {
                 <img
                   src={product.image_url || premiumKeyboard}
                   alt={product.name}
-                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
+                  onClick={() => navigate(`/product/${product.slug}`)}
                 />
                 
                 {/* Badge */}
                 <div className="absolute top-4 left-4">
-                  <span className="px-3 py-1 rounded-full text-xs font-bold bg-gold text-dark">
-                    Featured
-                  </span>
+                  {product.discount_percentage && product.discount_percentage > 0 ? (
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-500 text-white">
+                      {product.discount_percentage}% OFF
+                    </span>
+                  ) : (
+                    <span className="px-3 py-1 rounded-full text-xs font-bold bg-gold text-dark">
+                      Featured
+                    </span>
+                  )}
                 </div>
 
                 {/* Wishlist Button */}
@@ -128,8 +153,12 @@ const FeaturedProducts = () => {
 
                 {/* Quick View Overlay */}
                 <div className="absolute inset-0 bg-dark/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                  <Button variant="gold" className="transform scale-95 group-hover:scale-100 transition-transform duration-300">
-                    Quick View
+                  <Button 
+                    variant="gold" 
+                    className="transform scale-95 group-hover:scale-100 transition-transform duration-300"
+                    onClick={() => navigate(`/product/${product.slug}`)}
+                  >
+                    View Details
                   </Button>
                 </div>
               </div>
@@ -141,7 +170,10 @@ const FeaturedProducts = () => {
                   </span>
                 </div>
                 
-                <h3 className="text-lg font-bold text-dark mb-3 group-hover:text-gold transition-colors duration-300">
+                <h3 
+                  className="text-lg font-bold text-dark mb-3 group-hover:text-gold transition-colors duration-300 cursor-pointer"
+                  onClick={() => navigate(`/product/${product.slug}`)}
+                >
                   {product.name}
                 </h3>
 
@@ -165,9 +197,14 @@ const FeaturedProducts = () => {
                 {/* Price */}
                 <div className="flex items-center gap-2 mb-4">
                   <span className="text-2xl font-bold text-dark">
-                    ${product.price.toLocaleString()}
+                    ${discountedPrice.toLocaleString()}
                   </span>
-                  {product.compare_at_price && (
+                  {savings > 0 && (
+                    <span className="text-lg text-muted-foreground line-through">
+                      ${product.price.toLocaleString()}
+                    </span>
+                  )}
+                  {product.compare_at_price && !savings && (
                     <span className="text-lg text-muted-foreground line-through">
                       ${product.compare_at_price.toLocaleString()}
                     </span>
@@ -183,7 +220,8 @@ const FeaturedProducts = () => {
                 </Button>
               </div>
             </div>
-          ))}
+            );
+          })}
         </div>
 
         <div className="text-center mt-12 md:hidden">

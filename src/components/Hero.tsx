@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import heroStudio from "@/assets/hero-studio.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -28,10 +30,20 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Button variant="premium" size="lg" className="hover-lift animate-scale-in">
+            <Button 
+              variant="premium" 
+              size="lg" 
+              className="hover-lift animate-scale-in"
+              onClick={() => navigate('/explore')}
+            >
               Explore Collection
             </Button>
-            <Button variant="hero" size="lg" className="hover-lift animate-scale-in">
+            <Button 
+              variant="hero" 
+              size="lg" 
+              className="hover-lift animate-scale-in"
+              onClick={() => navigate('/demo')}
+            >
               Watch Demo
             </Button>
           </div>

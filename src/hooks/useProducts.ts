@@ -13,6 +13,8 @@ export interface Product {
   category_id: string | null;
   is_active: boolean;
   is_featured: boolean;
+  discount_percentage: number | null;
+  inventory_quantity: number;
   created_at: string;
   categories?: {
     name: string;
