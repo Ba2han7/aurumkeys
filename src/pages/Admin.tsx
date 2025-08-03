@@ -12,6 +12,8 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Plus, Edit, Trash2, Package, DollarSign, FileText } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -36,9 +38,21 @@ const Admin = () => {
   const { user } = useAuth();
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [editingProduct, setEditingProduct] = useState<any>(null);
   const queryClient = useQueryClient();
 
   const form = useForm<ProductForm>({
+    defaultValues: {
+      name: "",
+      description: "",
+      price: 0,
+      category_id: "",
+      inventory_quantity: 0,
+      is_featured: false,
+    },
+  });
+
+  const editForm = useForm<ProductForm>({
     defaultValues: {
       name: "",
       description: "",
@@ -124,6 +138,7 @@ const Admin = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
       form.reset();
       toast.success('Product added successfully!');
     },
@@ -133,8 +148,83 @@ const Admin = () => {
     },
   });
 
+  // Edit product mutation
+  const editProductMutation = useMutation({
+    mutationFn: async ({ id, productData }: { id: string; productData: ProductForm }) => {
+      const { data, error } = await supabase
+        .from('products')
+        .update({
+          ...productData,
+          slug: productData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      setEditingProduct(null);
+      editForm.reset();
+      toast.success('Product updated successfully!');
+    },
+    onError: (error) => {
+      console.error('Error updating product:', error);
+      toast.error('Failed to update product. Please try again.');
+    },
+  });
+
+  // Delete product mutation
+  const deleteProductMutation = useMutation({
+    mutationFn: async (productId: string) => {
+      const { error } = await supabase
+        .from('products')
+        .delete()
+        .eq('id', productId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin-products'] });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+      toast.success('Product deleted successfully!');
+    },
+    onError: (error) => {
+      console.error('Error deleting product:', error);
+      toast.error('Failed to delete product. Please try again.');
+    },
+  });
+
   const onSubmit = (data: ProductForm) => {
     addProductMutation.mutate(data);
+  };
+
+  const onEditSubmit = (data: ProductForm) => {
+    if (editingProduct) {
+      editProductMutation.mutate({ id: editingProduct.id, productData: data });
+    }
+  };
+
+  const handleEdit = (product: any) => {
+    setEditingProduct(product);
+    editForm.reset({
+      name: product.name,
+      description: product.description || "",
+      price: product.price,
+      compare_at_price: product.compare_at_price || undefined,
+      category_id: product.category_id || "",
+      image_url: product.image_url || "",
+      sku: product.sku || "",
+      inventory_quantity: product.inventory_quantity,
+      is_featured: product.is_featured,
+    });
+  };
+
+  const handleDelete = (productId: string) => {
+    deleteProductMutation.mutate(productId);
   };
 
   if (loading) {
@@ -188,9 +278,10 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-2 max-w-md">
+          <TabsList className="grid w-full grid-cols-3 max-w-lg">
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="add-product">Add Product</TabsTrigger>
+            <TabsTrigger value="content">Content</TabsTrigger>
           </TabsList>
 
           <TabsContent value="products" className="space-y-6">
@@ -231,12 +322,202 @@ const Admin = () => {
                             </TableCell>
                             <TableCell>
                               <div className="flex gap-2">
-                                <Button variant="outline" size="sm">
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button variant="outline" size="sm">
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button variant="outline" size="sm" onClick={() => handleEdit(product)}>
+                                      <Edit className="h-4 w-4" />
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                                    <DialogHeader>
+                                      <DialogTitle>Edit Product</DialogTitle>
+                                    </DialogHeader>
+                                    <Form {...editForm}>
+                                      <form onSubmit={editForm.handleSubmit(onEditSubmit)} className="space-y-4">
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                          <FormField
+                                            control={editForm.control}
+                                            name="name"
+                                            render={({ field }) => (
+                                              <FormItem>
+                                                <FormLabel>Product Name</FormLabel>
+                                                <FormControl>
+                                                  <Input placeholder="Enter product name" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                          <FormField
+                                            control={editForm.control}
+                                            name="sku"
+                                            render={({ field }) => (
+                                              <FormItem>
+                                                <FormLabel>SKU</FormLabel>
+                                                <FormControl>
+                                                  <Input placeholder="Enter product SKU" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                          <FormField
+                                            control={editForm.control}
+                                            name="price"
+                                            render={({ field }) => (
+                                              <FormItem>
+                                                <FormLabel>Price</FormLabel>
+                                                <FormControl>
+                                                  <Input 
+                                                    type="number" 
+                                                    step="0.01" 
+                                                    placeholder="0.00" 
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || 0)}
+                                                  />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                          <FormField
+                                            control={editForm.control}
+                                            name="compare_at_price"
+                                            render={({ field }) => (
+                                              <FormItem>
+                                                <FormLabel>Compare at Price</FormLabel>
+                                                <FormControl>
+                                                  <Input 
+                                                    type="number" 
+                                                    step="0.01" 
+                                                    placeholder="0.00" 
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(parseFloat(e.target.value) || undefined)}
+                                                  />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                          <FormField
+                                            control={editForm.control}
+                                            name="category_id"
+                                            render={({ field }) => (
+                                              <FormItem>
+                                                <FormLabel>Category</FormLabel>
+                                                <Select onValueChange={field.onChange} value={field.value}>
+                                                  <FormControl>
+                                                    <SelectTrigger>
+                                                      <SelectValue placeholder="Select a category" />
+                                                    </SelectTrigger>
+                                                  </FormControl>
+                                                  <SelectContent>
+                                                    {categories?.map((category) => (
+                                                      <SelectItem key={category.id} value={category.id}>
+                                                        {category.name}
+                                                      </SelectItem>
+                                                    ))}
+                                                  </SelectContent>
+                                                </Select>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                          <FormField
+                                            control={editForm.control}
+                                            name="inventory_quantity"
+                                            render={({ field }) => (
+                                              <FormItem>
+                                                <FormLabel>Stock Quantity</FormLabel>
+                                                <FormControl>
+                                                  <Input 
+                                                    type="number" 
+                                                    placeholder="0" 
+                                                    {...field}
+                                                    onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                                                  />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                          <FormField
+                                            control={editForm.control}
+                                            name="image_url"
+                                            render={({ field }) => (
+                                              <FormItem>
+                                                <FormLabel>Image URL</FormLabel>
+                                                <FormControl>
+                                                  <Input placeholder="https://example.com/image.jpg" {...field} />
+                                                </FormControl>
+                                                <FormMessage />
+                                              </FormItem>
+                                            )}
+                                          />
+                                        </div>
+                                        <FormField
+                                          control={editForm.control}
+                                          name="description"
+                                          render={({ field }) => (
+                                            <FormItem>
+                                              <FormLabel>Description</FormLabel>
+                                              <FormControl>
+                                                <Textarea 
+                                                  placeholder="Enter product description"
+                                                  className="min-h-[100px]"
+                                                  {...field} 
+                                                />
+                                              </FormControl>
+                                              <FormMessage />
+                                            </FormItem>
+                                          )}
+                                        />
+                                        <div className="flex items-center space-x-2">
+                                          <input
+                                            type="checkbox"
+                                            id="edit_is_featured"
+                                            {...editForm.register("is_featured")}
+                                            className="rounded border-gray-300"
+                                          />
+                                          <Label htmlFor="edit_is_featured">Featured Product</Label>
+                                        </div>
+                                        <div className="flex gap-2 pt-4">
+                                          <Button 
+                                            type="submit" 
+                                            disabled={editProductMutation.isPending}
+                                            className="flex-1"
+                                          >
+                                            {editProductMutation.isPending ? 'Updating...' : 'Update Product'}
+                                          </Button>
+                                        </div>
+                                      </form>
+                                    </Form>
+                                  </DialogContent>
+                                </Dialog>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Delete Product</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to delete "{product.name}"? This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => handleDelete(product.id)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                      >
+                                        Delete
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
                               </div>
                             </TableCell>
                           </TableRow>
@@ -431,6 +712,39 @@ const Admin = () => {
                     </Button>
                   </form>
                 </Form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="content" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <FileText className="h-5 w-5" />
+                  Content Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <p className="text-muted-foreground">
+                    Content management system will be implemented here to allow editing of static text throughout the application.
+                  </p>
+                  <div className="grid gap-4">
+                    <div className="p-4 border rounded-lg">
+                      <h3 className="font-medium mb-2">Site Title</h3>
+                      <Input placeholder="Enter site title" />
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <h3 className="font-medium mb-2">Hero Heading</h3>
+                      <Input placeholder="Enter hero heading" />
+                    </div>
+                    <div className="p-4 border rounded-lg">
+                      <h3 className="font-medium mb-2">Hero Description</h3>
+                      <Textarea placeholder="Enter hero description" />
+                    </div>
+                    <Button className="w-fit">Save Changes</Button>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
