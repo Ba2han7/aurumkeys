@@ -44,6 +44,57 @@ export type Database = {
         }
         Relationships: []
       }
+      demo_videos: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          title: string
+          updated_at: string
+          video_url: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          title: string
+          updated_at?: string
+          video_url: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          title?: string
+          updated_at?: string
+          video_url?: string
+        }
+        Relationships: []
+      }
+      favorites: {
+        Row: {
+          created_at: string
+          id: string
+          product_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          product_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          product_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       order_items: {
         Row: {
           created_at: string
@@ -217,6 +268,7 @@ export type Database = {
           cost_price: number | null
           created_at: string
           description: string | null
+          discount_percentage: number | null
           id: string
           image_url: string | null
           images: string[] | null
@@ -241,6 +293,7 @@ export type Database = {
           cost_price?: number | null
           created_at?: string
           description?: string | null
+          discount_percentage?: number | null
           id?: string
           image_url?: string | null
           images?: string[] | null
@@ -265,6 +318,7 @@ export type Database = {
           cost_price?: number | null
           created_at?: string
           description?: string | null
+          discount_percentage?: number | null
           id?: string
           image_url?: string | null
           images?: string[] | null
