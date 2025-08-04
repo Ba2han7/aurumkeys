@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Star, Heart, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
@@ -17,6 +17,7 @@ import synthesizer from "@/assets/synthesizer.jpg";
 const Explore = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const { addItem } = useCart();
+  const navigate = useNavigate();
   const location = useLocation();
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
   const { data: products = [], isLoading: productsLoading } = useProducts(selectedCategory || undefined);
@@ -73,6 +74,7 @@ const Explore = () => {
     {
       id: "101",
       name: "Steinway & Sons Digital Grand",
+      slug: "steinway-digital-grand",
       price: 12999,
       image_url: premiumKeyboard,
       categories: { name: "Keyboards", slug: "keyboards" }
@@ -80,6 +82,7 @@ const Explore = () => {
     {
       id: "102", 
       name: "Roland Fantom-8 Workstation",
+      slug: "roland-fantom-8",
       price: 3499,
       image_url: audioEquipment,
       categories: { name: "Keyboards", slug: "keyboards" }
@@ -87,6 +90,7 @@ const Explore = () => {
     {
       id: "103",
       name: "Yamaha Montage M8x",
+      slug: "yamaha-montage-m8x",
       price: 4199,
       image_url: premiumKeyboard,
       categories: { name: "Keyboards", slug: "keyboards" }
@@ -143,7 +147,8 @@ const Explore = () => {
                   <img
                     src={product.image_url || premiumKeyboard}
                     alt={product.name}
-                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-64 object-cover group-hover:scale-110 transition-transform duration-700 cursor-pointer"
+                    onClick={() => navigate(`/product/${product.slug}`)}
                   />
                   
                   <Button
@@ -162,7 +167,10 @@ const Explore = () => {
                     </span>
                   </div>
                   
-                  <h3 className="text-lg font-bold text-dark mb-3 group-hover:text-gold transition-colors duration-300">
+                  <h3 
+                    className="text-lg font-bold text-dark mb-3 group-hover:text-gold transition-colors duration-300 cursor-pointer"
+                    onClick={() => navigate(`/product/${product.slug}`)}
+                  >
                     {product.name}
                   </h3>
 
