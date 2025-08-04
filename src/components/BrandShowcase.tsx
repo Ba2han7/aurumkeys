@@ -1,13 +1,7 @@
 const BrandShowcase = () => {
   const brands = [
-    { name: "Steinway & Sons", logo: "STEINWAY" },
-    { name: "Roland", logo: "ROLAND" },
-    { name: "Yamaha", logo: "YAMAHA" },
-    { name: "Moog", logo: "MOOG" },
-    { name: "Korg", logo: "KORG" },
-    { name: "Nord", logo: "NORD" },
-    { name: "Sequential", logo: "SEQUENTIAL" },
-    { name: "Arturia", logo: "ARTURIA" },
+    { name: "Arsenberg", logo: "ARSENBERG" },
+    { name: "Upcoming Brand", logo: "COMING SOON" },
   ];
 
   return (
