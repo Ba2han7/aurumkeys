@@ -14,13 +14,14 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Plus, Edit, Trash2, Package, DollarSign, FileText } from "lucide-react";
+import { Plus, Edit, Trash2, Package, DollarSign, FileText, Star, MessageSquare } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackButton from "@/components/BackButton";
 import { useCategories } from "@/hooks/useCategories";
+import { useAdminReviews, useUpdateReview, useDeleteReview } from "@/hooks/useReviews";
 
 interface ProductForm {
   name: string;
@@ -40,6 +41,11 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const queryClient = useQueryClient();
+
+  // Reviews hooks
+  const { data: reviews } = useAdminReviews();
+  const updateReviewMutation = useUpdateReview();
+  const deleteReviewMutation = useDeleteReview();
 
   const form = useForm<ProductForm>({
     defaultValues: {
@@ -227,6 +233,14 @@ const Admin = () => {
     deleteProductMutation.mutate(productId);
   };
 
+  const handleApproveReview = (reviewId: string, isApproved: boolean) => {
+    updateReviewMutation.mutate({ id: reviewId, updates: { is_approved: isApproved } });
+  };
+
+  const handleDeleteReview = (reviewId: string) => {
+    deleteReviewMutation.mutate(reviewId);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -278,9 +292,10 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="products" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-lg">
+          <TabsList className="grid w-full grid-cols-4 max-w-lg">
             <TabsTrigger value="products">Products</TabsTrigger>
             <TabsTrigger value="add-product">Add Product</TabsTrigger>
+            <TabsTrigger value="reviews">Reviews</TabsTrigger>
             <TabsTrigger value="content">Content</TabsTrigger>
           </TabsList>
 
@@ -712,6 +727,122 @@ const Admin = () => {
                     </Button>
                   </form>
                 </Form>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="reviews" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageSquare className="h-5 w-5" />
+                  Reviews Management
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {reviews && reviews.length > 0 ? (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Product</TableHead>
+                          <TableHead>Rating</TableHead>
+                          <TableHead>Title</TableHead>
+                          <TableHead>Comment</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead>Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {reviews.map((review: any) => (
+                          <TableRow key={review.id}>
+                            <TableCell className="font-medium">
+                              {review.products?.name || 'Unknown Product'}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`h-4 w-4 ${
+                                      i < review.rating ? 'fill-gold text-gold' : 'text-muted'
+                                    }`}
+                                  />
+                                ))}
+                                <span className="ml-1 text-sm">({review.rating})</span>
+                              </div>
+                            </TableCell>
+                            <TableCell className="max-w-xs truncate">{review.title}</TableCell>
+                            <TableCell className="max-w-xs truncate">{review.comment}</TableCell>
+                            <TableCell>
+                              <Badge variant={review.is_approved ? "default" : "secondary"}>
+                                {review.is_approved ? 'Approved' : 'Pending'}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              {new Date(review.created_at).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                {!review.is_approved && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleApproveReview(review.id, true)}
+                                    disabled={updateReviewMutation.isPending}
+                                  >
+                                    Approve
+                                  </Button>
+                                )}
+                                {review.is_approved && (
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handleApproveReview(review.id, false)}
+                                    disabled={updateReviewMutation.isPending}
+                                  >
+                                    Hide
+                                  </Button>
+                                )}
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button variant="outline" size="sm">
+                                      <Trash2 className="h-4 w-4" />
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Delete Review</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Are you sure you want to delete this review? This action cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => handleDeleteReview(review.id)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                      >
+                                        Delete
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <MessageSquare className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                    <p className="text-lg font-medium">No reviews found</p>
+                    <p className="text-muted-foreground">Customer reviews will appear here once submitted.</p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

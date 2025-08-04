@@ -1,17 +1,21 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
+import { useReviews, useReviewStats, useCreateReview, ReviewForm } from "@/hooks/useReviews";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackButton from "@/components/BackButton";
-import { Star, Heart, Share, Truck, Shield, RotateCcw, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { Star, Truck, Shield, RotateCcw, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 const ProductDetail = () => {
@@ -19,60 +23,35 @@ const ProductDetail = () => {
   const navigate = useNavigate();
   const { addItem } = useCart();
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
+  const [showReviewForm, setShowReviewForm] = useState(false);
 
   // Fetch product by slug
   const { data: products = [], isLoading } = useProducts();
   const product = products.find(p => p.slug === slug);
 
-  // Check if product is in favorites
-  const { data: favorites = [] } = useQuery({
-    queryKey: ['favorites', user?.id],
-    queryFn: async () => {
-      if (!user) return [];
-      const { data, error } = await supabase
-        .from('favorites')
-        .select('product_id')
-        .eq('user_id', user.id);
-      if (error) throw error;
-      return data.map(f => f.product_id);
-    },
-    enabled: !!user,
-  });
+  // Fetch reviews and stats
+  const { data: reviews = [] } = useReviews(product?.id);
+  const { data: reviewStats } = useReviewStats(product?.id);
+  const createReviewMutation = useCreateReview();
 
-  const isFavorite = product && favorites.includes(product.id);
-
-  // Toggle favorite mutation
-  const toggleFavoriteMutation = useMutation({
-    mutationFn: async () => {
-      if (!user || !product) throw new Error('User not authenticated');
-      
-      if (isFavorite) {
-        const { error } = await supabase
-          .from('favorites')
-          .delete()
-          .eq('user_id', user.id)
-          .eq('product_id', product.id);
-        if (error) throw error;
-      } else {
-        const { error } = await supabase
-          .from('favorites')
-          .insert({ user_id: user.id, product_id: product.id });
-        if (error) throw error;
-      }
+  const reviewForm = useForm<ReviewForm>({
+    defaultValues: {
+      rating: 5,
+      title: "",
+      comment: "",
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['favorites'] });
-      toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
-    },
-    onError: () => {
-      toast.error('Please sign in to add favorites');
-    },
+    mode: "onChange",
   });
 
   const handleAddToCart = () => {
+    if (!user) {
+      toast.error('Please sign in to add items to cart');
+      navigate('/auth');
+      return;
+    }
+    
     if (!product) return;
     
     const discountedPrice = product.discount_percentage 
@@ -89,6 +68,30 @@ const ProductDetail = () => {
       });
     }
     toast.success(`Added ${quantity} item(s) to cart`);
+  };
+
+  const handleReviewSubmit = (data: ReviewForm) => {
+    if (!user) {
+      toast.error('Please sign in to write a review');
+      navigate('/auth');
+      return;
+    }
+    
+    if (!product) return;
+
+    createReviewMutation.mutate(
+      { productId: product.id, reviewData: data },
+      {
+        onSuccess: () => {
+          toast.success('Review submitted successfully!');
+          reviewForm.reset();
+          setShowReviewForm(false);
+        },
+        onError: () => {
+          toast.error('Failed to submit review. Please try again.');
+        },
+      }
+    );
   };
 
   if (isLoading) {
@@ -188,12 +191,14 @@ const ProductDetail = () => {
                     <Star
                       key={i}
                       className={`h-5 w-5 ${
-                        i < 4 ? 'fill-gold text-gold' : 'text-muted'
+                        i < Math.floor(reviewStats?.averageRating || 0) ? 'fill-gold text-gold' : 'text-muted'
                       }`}
                     />
                   ))}
                 </div>
-                <span className="text-sm text-muted-foreground">4.8 (127 reviews)</span>
+                <span className="text-sm text-muted-foreground">
+                  {reviewStats?.averageRating?.toFixed(1) || '0.0'} ({reviewStats?.totalReviews || 0} reviews)
+                </span>
               </div>
             </div>
 
@@ -259,28 +264,15 @@ const ProductDetail = () => {
                 </span>
               </div>
 
-              <div className="flex gap-3">
-                <Button
-                  onClick={handleAddToCart}
-                  className="flex-1"
-                  variant="premium"
-                  size="lg"
-                  disabled={!product.inventory_quantity}
-                >
-                  Add to Cart - ${(discountedPrice * quantity).toLocaleString()}
-                </Button>
-                <Button
-                  onClick={() => toggleFavoriteMutation.mutate()}
-                  variant="outline"
-                  size="lg"
-                  className={isFavorite ? 'text-red-500 border-red-500' : ''}
-                >
-                  <Heart className={`h-5 w-5 ${isFavorite ? 'fill-current' : ''}`} />
-                </Button>
-                <Button variant="outline" size="lg">
-                  <Share className="h-5 w-5" />
-                </Button>
-              </div>
+              <Button
+                onClick={handleAddToCart}
+                className="w-full"
+                variant="premium"
+                size="lg"
+                disabled={!product.inventory_quantity}
+              >
+                Add to Cart - ${(discountedPrice * quantity).toLocaleString()}
+              </Button>
             </div>
 
             <Separator />
@@ -300,6 +292,162 @@ const ProductDetail = () => {
                 <span>2-year manufacturer warranty</span>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Reviews Section */}
+        <div className="mt-16 space-y-8">
+          <div className="flex items-center justify-between">
+            <h2 className="text-2xl font-bold">Customer Reviews</h2>
+            {user ? (
+              <Button 
+                onClick={() => setShowReviewForm(!showReviewForm)}
+                variant="outline"
+              >
+                Write a Review
+              </Button>
+            ) : (
+              <Button onClick={() => navigate('/auth')} variant="outline">
+                Sign in to Review
+              </Button>
+            )}
+          </div>
+
+          {/* Review Form */}
+          {showReviewForm && user && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Write Your Review</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Form {...reviewForm}>
+                  <form onSubmit={reviewForm.handleSubmit(handleReviewSubmit)} className="space-y-4">
+                    <FormField
+                      control={reviewForm.control}
+                      name="rating"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Rating</FormLabel>
+                          <FormControl>
+                            <div className="flex gap-1">
+                              {[1, 2, 3, 4, 5].map((rating) => (
+                                <button
+                                  key={rating}
+                                  type="button"
+                                  onClick={() => field.onChange(rating)}
+                                  className="focus:outline-none"
+                                >
+                                  <Star
+                                    className={`h-6 w-6 ${
+                                      rating <= field.value ? 'fill-gold text-gold' : 'text-muted'
+                                    }`}
+                                  />
+                                </button>
+                              ))}
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={reviewForm.control}
+                      name="title"
+                      rules={{ 
+                        required: "Review title is required",
+                        minLength: { value: 3, message: "Title must be at least 3 characters" },
+                        maxLength: { value: 100, message: "Title must be less than 100 characters" }
+                      }}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Review Title *</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Summarize your experience" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={reviewForm.control}
+                      name="comment"
+                      rules={{ 
+                        required: "Review comment is required",
+                        minLength: { value: 10, message: "Comment must be at least 10 characters" },
+                        maxLength: { value: 1000, message: "Comment must be less than 1000 characters" }
+                      }}
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Your Review *</FormLabel>
+                          <FormControl>
+                            <Textarea 
+                              placeholder="Share your thoughts about this product"
+                              rows={4}
+                              {...field} 
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <div className="flex gap-2">
+                      <Button 
+                        type="submit" 
+                        disabled={createReviewMutation.isPending}
+                      >
+                        {createReviewMutation.isPending ? 'Submitting...' : 'Submit Review'}
+                      </Button>
+                      <Button 
+                        type="button" 
+                        variant="outline" 
+                        onClick={() => setShowReviewForm(false)}
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Reviews List */}
+          <div className="space-y-6">
+            {reviews.length > 0 ? (
+              reviews.map((review) => (
+                <Card key={review.id}>
+                  <CardContent className="pt-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="flex">
+                            {[...Array(5)].map((_, i) => (
+                              <Star
+                                key={i}
+                                className={`h-4 w-4 ${
+                                  i < review.rating ? 'fill-gold text-gold' : 'text-muted'
+                                }`}
+                              />
+                            ))}
+                          </div>
+                          <span className="font-medium">{review.title}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          By Anonymous • {new Date(review.created_at).toLocaleDateString()}
+                        </p>
+                      </div>
+                    </div>
+                    <p className="text-sm leading-relaxed">{review.comment}</p>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <Card>
+                <CardContent className="pt-6 text-center">
+                  <p className="text-muted-foreground">No reviews yet. Be the first to review this product!</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
       </main>
