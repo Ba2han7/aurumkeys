@@ -30,6 +30,8 @@ interface ProductForm {
   compare_at_price?: number;
   category_id: string;
   image_url?: string;
+  images?: string[];
+  video_urls?: string[];
   sku?: string;
   inventory_quantity: number;
   is_featured: boolean;
@@ -40,6 +42,10 @@ const Admin = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [additionalImages, setAdditionalImages] = useState<string[]>([]);
+  const [videoUrls, setVideoUrls] = useState<string[]>([]);
+  const [editAdditionalImages, setEditAdditionalImages] = useState<string[]>([]);
+  const [editVideoUrls, setEditVideoUrls] = useState<string[]>([]);
   const queryClient = useQueryClient();
 
   // Reviews hooks
@@ -55,6 +61,8 @@ const Admin = () => {
       category_id: "",
       inventory_quantity: 0,
       is_featured: false,
+      images: [],
+      video_urls: [],
     },
   });
 
@@ -66,6 +74,8 @@ const Admin = () => {
       category_id: "",
       inventory_quantity: 0,
       is_featured: false,
+      images: [],
+      video_urls: [],
     },
   });
 
@@ -129,10 +139,13 @@ const Admin = () => {
   // Add product mutation
   const addProductMutation = useMutation({
     mutationFn: async (productData: ProductForm) => {
+      const allImages = [productData.image_url, ...additionalImages].filter(Boolean);
       const { data, error } = await supabase
         .from('products')
         .insert([{
           ...productData,
+          images: allImages.length > 0 ? allImages : null,
+          video_urls: videoUrls.length > 0 ? videoUrls : null,
           slug: productData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
           is_active: true,
         }])
@@ -146,6 +159,8 @@ const Admin = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
       form.reset();
+      setAdditionalImages([]);
+      setVideoUrls([]);
       toast.success('Product added successfully!');
     },
     onError: (error) => {
@@ -157,10 +172,13 @@ const Admin = () => {
   // Edit product mutation
   const editProductMutation = useMutation({
     mutationFn: async ({ id, productData }: { id: string; productData: ProductForm }) => {
+      const allImages = [productData.image_url, ...editAdditionalImages].filter(Boolean);
       const { data, error } = await supabase
         .from('products')
         .update({
           ...productData,
+          images: allImages.length > 0 ? allImages : null,
+          video_urls: editVideoUrls.length > 0 ? editVideoUrls : null,
           slug: productData.name.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, ''),
         })
         .eq('id', id)
@@ -174,6 +192,8 @@ const Admin = () => {
       queryClient.invalidateQueries({ queryKey: ['admin-products'] });
       queryClient.invalidateQueries({ queryKey: ['products'] });
       setEditingProduct(null);
+      setEditAdditionalImages([]);
+      setEditVideoUrls([]);
       editForm.reset();
       toast.success('Product updated successfully!');
     },
@@ -216,13 +236,19 @@ const Admin = () => {
 
   const handleEdit = (product: any) => {
     setEditingProduct(product);
+    const images = product.images || [];
+    const videos = product.video_urls || [];
+    
+    setEditAdditionalImages(images.length > 1 ? images.slice(1) : []);
+    setEditVideoUrls(videos);
+    
     editForm.reset({
       name: product.name,
       description: product.description || "",
       price: product.price,
       compare_at_price: product.compare_at_price || undefined,
       category_id: product.category_id || "",
-      image_url: product.image_url || "",
+      image_url: images.length > 0 ? images[0] : "",
       sku: product.sku || "",
       inventory_quantity: product.inventory_quantity,
       is_featured: product.is_featured,
@@ -456,20 +482,90 @@ const Admin = () => {
                                               </FormItem>
                                             )}
                                           />
-                                          <FormField
-                                            control={editForm.control}
-                                            name="image_url"
-                                            render={({ field }) => (
-                                              <FormItem>
-                                                <FormLabel>Image URL</FormLabel>
-                                                <FormControl>
-                                                  <Input placeholder="https://example.com/image.jpg" {...field} />
-                                                </FormControl>
-                                                <FormMessage />
-                                              </FormItem>
-                                            )}
-                                          />
-                                        </div>
+                                           <FormField
+                                             control={editForm.control}
+                                             name="image_url"
+                                             render={({ field }) => (
+                                               <FormItem>
+                                                 <FormLabel>Main Image URL</FormLabel>
+                                                 <FormControl>
+                                                   <Input placeholder="https://example.com/image.jpg" {...field} />
+                                                 </FormControl>
+                                                 <FormMessage />
+                                               </FormItem>
+                                             )}
+                                           />
+                                         </div>
+
+                                         {/* Edit Additional Images */}
+                                         <div>
+                                           <Label>Additional Images</Label>
+                                           <div className="space-y-2">
+                                             {editAdditionalImages.map((url, index) => (
+                                               <div key={index} className="flex gap-2">
+                                                 <Input
+                                                   value={url}
+                                                   onChange={(e) => {
+                                                     const newImages = [...editAdditionalImages];
+                                                     newImages[index] = e.target.value;
+                                                     setEditAdditionalImages(newImages);
+                                                   }}
+                                                   placeholder="https://example.com/image.jpg"
+                                                 />
+                                                 <Button
+                                                   type="button"
+                                                   variant="outline"
+                                                   size="sm"
+                                                   onClick={() => setEditAdditionalImages(editAdditionalImages.filter((_, i) => i !== index))}
+                                                 >
+                                                   Remove
+                                                 </Button>
+                                               </div>
+                                             ))}
+                                             <Button
+                                               type="button"
+                                               variant="outline"
+                                               onClick={() => setEditAdditionalImages([...editAdditionalImages, ""])}
+                                             >
+                                               Add Image
+                                             </Button>
+                                           </div>
+                                         </div>
+
+                                         {/* Edit Video URLs */}
+                                         <div>
+                                           <Label>Video URLs</Label>
+                                           <div className="space-y-2">
+                                             {editVideoUrls.map((url, index) => (
+                                               <div key={index} className="flex gap-2">
+                                                 <Input
+                                                   value={url}
+                                                   onChange={(e) => {
+                                                     const newUrls = [...editVideoUrls];
+                                                     newUrls[index] = e.target.value;
+                                                     setEditVideoUrls(newUrls);
+                                                   }}
+                                                   placeholder="https://example.com/video.mp4"
+                                                 />
+                                                 <Button
+                                                   type="button"
+                                                   variant="outline"
+                                                   size="sm"
+                                                   onClick={() => setEditVideoUrls(editVideoUrls.filter((_, i) => i !== index))}
+                                                 >
+                                                   Remove
+                                                 </Button>
+                                               </div>
+                                             ))}
+                                             <Button
+                                               type="button"
+                                               variant="outline"
+                                               onClick={() => setEditVideoUrls([...editVideoUrls, ""])}
+                                             >
+                                               Add Video
+                                             </Button>
+                                           </div>
+                                         </div>
                                         <FormField
                                           control={editForm.control}
                                           name="description"
@@ -675,20 +771,90 @@ const Admin = () => {
                         )}
                       />
 
-                      <FormField
-                        control={form.control}
-                        name="image_url"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Image URL (Optional)</FormLabel>
-                            <FormControl>
-                              <Input placeholder="https://example.com/image.jpg" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                       <FormField
+                         control={form.control}
+                         name="image_url"
+                         render={({ field }) => (
+                           <FormItem>
+                             <FormLabel>Main Image URL (Optional)</FormLabel>
+                             <FormControl>
+                               <Input placeholder="https://example.com/image.jpg" {...field} />
+                             </FormControl>
+                             <FormMessage />
+                           </FormItem>
+                         )}
+                       />
+                     </div>
+
+                     {/* Additional Images */}
+                     <div>
+                       <Label>Additional Images</Label>
+                       <div className="space-y-2">
+                         {additionalImages.map((url, index) => (
+                           <div key={index} className="flex gap-2">
+                             <Input
+                               value={url}
+                               onChange={(e) => {
+                                 const newImages = [...additionalImages];
+                                 newImages[index] = e.target.value;
+                                 setAdditionalImages(newImages);
+                               }}
+                               placeholder="https://example.com/image.jpg"
+                             />
+                             <Button
+                               type="button"
+                               variant="outline"
+                               size="sm"
+                               onClick={() => setAdditionalImages(additionalImages.filter((_, i) => i !== index))}
+                             >
+                               Remove
+                             </Button>
+                           </div>
+                         ))}
+                         <Button
+                           type="button"
+                           variant="outline"
+                           onClick={() => setAdditionalImages([...additionalImages, ""])}
+                         >
+                           Add Image
+                         </Button>
+                       </div>
+                     </div>
+
+                     {/* Video URLs */}
+                     <div>
+                       <Label>Video URLs</Label>
+                       <div className="space-y-2">
+                         {videoUrls.map((url, index) => (
+                           <div key={index} className="flex gap-2">
+                             <Input
+                               value={url}
+                               onChange={(e) => {
+                                 const newUrls = [...videoUrls];
+                                 newUrls[index] = e.target.value;
+                                 setVideoUrls(newUrls);
+                               }}
+                               placeholder="https://example.com/video.mp4"
+                             />
+                             <Button
+                               type="button"
+                               variant="outline"
+                               size="sm"
+                               onClick={() => setVideoUrls(videoUrls.filter((_, i) => i !== index))}
+                             >
+                               Remove
+                             </Button>
+                           </div>
+                         ))}
+                         <Button
+                           type="button"
+                           variant="outline"
+                           onClick={() => setVideoUrls([...videoUrls, ""])}
+                         >
+                           Add Video
+                         </Button>
+                       </div>
+                     </div>
 
                     <FormField
                       control={form.control}

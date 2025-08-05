@@ -124,6 +124,12 @@ const ProductDetail = () => {
     : product.image_url 
     ? [product.image_url] 
     : [];
+  
+  // Combine regular images with video URLs for the media gallery
+  const allMedia = [
+    ...images,
+    ...(product.video_urls || [])
+  ];
 
   const discountedPrice = product.discount_percentage 
     ? product.price * (1 - product.discount_percentage / 100)
@@ -139,33 +145,92 @@ const ProductDetail = () => {
           <BackButton />
         </div>
 
+        {/* Last Product Banner */}
+        {product.inventory_quantity === 1 && (
+          <div className="bg-gradient-to-r from-red-500 to-red-600 text-white p-3 rounded-lg mb-6 animate-pulse">
+            <div className="flex items-center justify-center gap-2 font-semibold">
+              <span className="inline-block w-2 h-2 bg-white rounded-full animate-bounce"></span>
+              <span>⚡ Last Product Available! ⚡</span>
+              <span className="inline-block w-2 h-2 bg-white rounded-full animate-bounce [animation-delay:0.2s]"></span>
+            </div>
+            <p className="text-center text-sm mt-1 opacity-90">Don't miss out! Only 1 left in stock</p>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          {/* Product Images */}
+          {/* Product Images and Videos */}
           <div className="space-y-4">
             <div className="aspect-square overflow-hidden rounded-lg bg-muted">
-              <img
-                src={images[selectedImage] || product.image_url || '/placeholder.svg'}
-                alt={product.name}
-                className="w-full h-full object-cover"
-              />
+              {allMedia[selectedImage] && (allMedia[selectedImage].includes('.mp4') || allMedia[selectedImage].includes('.mov') || allMedia[selectedImage].includes('.avi')) ? (
+                <video
+                  src={allMedia[selectedImage]}
+                  controls
+                  className="w-full h-full object-cover"
+                  poster={product.image_url || '/placeholder.svg'}
+                >
+                  Your browser does not support the video tag.
+                </video>
+              ) : (
+                <img
+                  src={allMedia[selectedImage] || product.image_url || '/placeholder.svg'}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
+              )}
             </div>
-            {images.length > 1 && (
+            {allMedia.length > 1 && (
               <div className="flex gap-2 overflow-x-auto">
-                {images.map((image, index) => (
+                {allMedia.map((media, index) => (
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 ${
+                    className={`flex-shrink-0 w-20 h-20 rounded-lg overflow-hidden border-2 relative ${
                       selectedImage === index ? 'border-gold' : 'border-transparent'
                     }`}
                   >
-                    <img
-                      src={image}
-                      alt={`${product.name} ${index + 1}`}
-                      className="w-full h-full object-cover"
-                    />
+                    {(media.includes('.mp4') || media.includes('.mov') || media.includes('.avi')) ? (
+                      <>
+                        <video
+                          src={media}
+                          className="w-full h-full object-cover"
+                          muted
+                        />
+                        <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                          <div className="w-6 h-6 bg-white/80 rounded-full flex items-center justify-center">
+                            <div className="w-0 h-0 border-l-[6px] border-l-black border-y-[4px] border-y-transparent ml-0.5"></div>
+                          </div>
+                        </div>
+                      </>
+                    ) : (
+                      <img
+                        src={media}
+                        alt={`${product.name} ${index + 1}`}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
                   </button>
                 ))}
+              </div>
+            )}
+            
+            {/* Video URLs Section */}
+            {product.video_urls && product.video_urls.length > 0 && (
+              <div className="space-y-2">
+                <h3 className="font-semibold text-sm">Product Videos</h3>
+                <div className="grid gap-2">
+                  {product.video_urls.map((videoUrl, index) => (
+                    <div key={index} className="aspect-video rounded-lg overflow-hidden bg-muted">
+                      <video
+                        src={videoUrl}
+                        controls
+                        className="w-full h-full object-cover"
+                        poster={product.image_url || '/placeholder.svg'}
+                      >
+                        Your browser does not support the video tag.
+                      </video>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>

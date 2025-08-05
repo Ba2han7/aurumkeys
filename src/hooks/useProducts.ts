@@ -10,6 +10,7 @@ export interface Product {
   compare_at_price: number | null;
   image_url: string | null;
   images: string[] | null;
+  video_urls: string[] | null;
   category_id: string | null;
   is_active: boolean;
   is_featured: boolean;
