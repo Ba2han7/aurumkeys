@@ -284,6 +284,7 @@ export type Database = {
           tags: string[] | null
           track_inventory: boolean
           updated_at: string
+          video_urls: string[] | null
           weight: number | null
         }
         Insert: {
@@ -309,6 +310,7 @@ export type Database = {
           tags?: string[] | null
           track_inventory?: boolean
           updated_at?: string
+          video_urls?: string[] | null
           weight?: number | null
         }
         Update: {
@@ -334,6 +336,7 @@ export type Database = {
           tags?: string[] | null
           track_inventory?: boolean
           updated_at?: string
+          video_urls?: string[] | null
           weight?: number | null
         }
         Relationships: [
