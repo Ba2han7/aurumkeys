@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import SearchDialog from "./SearchDialog";
+import LanguageSelector from "./LanguageSelector";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -73,6 +74,7 @@ const Header = () => {
 
           {/* Right Side Icons */}
           <div className="flex items-center space-x-4">
+            <LanguageSelector />
             <Button 
               variant="ghost" 
               size="icon" 
