@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { Menu, Search, ShoppingCart, User, X, LogOut, Settings } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -21,6 +22,7 @@ const Header = () => {
   const { state } = useCart();
   const { user, signOut } = useAuth();
   const { isAdmin } = useIsAdmin();
+  const { t } = useLanguage();
 
   const handleSignOut = async () => {
     await signOut();
@@ -28,13 +30,13 @@ const Header = () => {
   };
 
   const navigation = [
-    { name: "Keyboards", href: "/explore", category: "keyboards" },
-    { name: "Guitars", href: "/explore", category: "guitars" },
-    { name: "Drums", href: "/explore", category: "drums" },
-    { name: "Violins", href: "/explore", category: "violins" },
-    { name: "Audio Equipment", href: "/explore", category: "audio" },
-    { name: "Accessories", href: "/explore", category: "accessories" },
-    { name: "Contact", href: "/contact", category: null },
+    { name: t("keyboards"), href: "/explore", category: "keyboards" },
+    { name: t("guitars"), href: "/explore", category: "guitars" },
+    { name: t("drums"), href: "/explore", category: "drums" },
+    { name: t("violins"), href: "/explore", category: "violins" },
+    { name: t("audioEquipment"), href: "/explore", category: "audio" },
+    { name: t("accessories"), href: "/explore", category: "accessories" },
+    { name: t("contact"), href: "/contact", category: null },
   ];
 
   return (
@@ -96,13 +98,13 @@ const Header = () => {
                     <DropdownMenuItem asChild>
                       <Link to="/admin" className="flex items-center">
                         <Settings className="mr-2 h-4 w-4" />
-                        Admin Panel
+                        {t("adminPanel")}
                       </Link>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />
-                    Sign Out
+                    {t("signOut")}
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>

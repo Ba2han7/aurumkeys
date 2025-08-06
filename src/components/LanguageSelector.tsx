@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
 import {
@@ -46,12 +47,14 @@ const languages = [
 ];
 
 const LanguageSelector = () => {
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
+  const { language, setLanguage } = useLanguage();
+  const [selectedLanguage, setSelectedLanguage] = useState(
+    languages.find(lang => lang.code === language) || languages[0]
+  );
 
-  const handleLanguageChange = (language: typeof languages[0]) => {
-    setSelectedLanguage(language);
-    // Here you would implement actual language switching logic
-    console.log(`Language changed to: ${language.name}`);
+  const handleLanguageChange = (newLanguage: typeof languages[0]) => {
+    setSelectedLanguage(newLanguage);
+    setLanguage(newLanguage.code as 'en' | 'tr');
   };
 
   return (

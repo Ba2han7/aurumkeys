@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import heroStudio from "@/assets/hero-studio.jpg";
 
 const Hero = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Image */}
@@ -20,13 +22,13 @@ const Hero = () => {
       <div className="relative z-10 container mx-auto px-4 text-center">
         <div className="max-w-4xl mx-auto animate-fade-in">
           <h1 className="text-5xl md:text-7xl font-serif font-bold text-white mb-6">
-            EXCLUSIVE
-            <span className="block text-gold">COLLECTION</span>
+            {t("exclusiveCollection").split(' ')[0]}
+            <span className="block text-gold">{t("exclusiveCollection").split(' ')[1]}</span>
           </h1>
           
           <p className="text-xl md:text-2xl text-white/90 mb-8 leading-relaxed">
-            Discover our hand-selected premium keyboards, pianos, and professional audio equipment. 
-            <span className="block mt-2 text-gold font-medium">Elevate your sound to perfection.</span>
+            {t("heroDescription")}
+            <span className="block mt-2 text-gold font-medium">{t("heroSubtext")}</span>
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
@@ -36,7 +38,7 @@ const Hero = () => {
               className="hover-lift animate-scale-in"
               onClick={() => navigate('/explore')}
             >
-              Explore Collection
+              {t("exploreCollection")}
             </Button>
             <Button 
               variant="hero" 
@@ -44,20 +46,20 @@ const Hero = () => {
               className="hover-lift animate-scale-in"
               onClick={() => navigate('/demo')}
             >
-              Watch Demo
+              {t("watchDemo")}
             </Button>
           </div>
 
           {/* Feature Pills */}
           <div className="flex flex-wrap justify-center gap-4 animate-slide-up">
             <div className="bg-white/10 backdrop-blur-sm border border-gold/20 rounded-full px-6 py-3 text-white font-medium">
-              Professional Grade
+              {t("professionalGrade")}
             </div>
             <div className="bg-white/10 backdrop-blur-sm border border-gold/20 rounded-full px-6 py-3 text-white font-medium">
-              Premium Brands
+              {t("premiumBrands")}
             </div>
             <div className="bg-white/10 backdrop-blur-sm border border-gold/20 rounded-full px-6 py-3 text-white font-medium">
-              Expert Support
+              {t("expertSupport")}
             </div>
           </div>
         </div>
