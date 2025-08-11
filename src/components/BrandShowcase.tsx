@@ -1,4 +1,7 @@
+import { useLanguage } from "@/contexts/LanguageContext";
+
 const BrandShowcase = () => {
+  const { t } = useLanguage();
   const brands = [
     { name: "Arsenberg", logo: "ARSENBERG" },
     { name: "Upcoming Brand", logo: "COMING SOON" },
@@ -9,10 +12,10 @@ const BrandShowcase = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-serif font-bold mb-6">
-            Premium <span className="text-gold">Brands</span>
+            {t("premiumBrandsExtended")} <span className="text-gold">{t("premiumBrands")}</span>
           </h2>
           <p className="text-xl text-white/80 max-w-2xl mx-auto">
-            We partner with the world's most respected musical instrument manufacturers
+            {t("worldRespectedManufacturers")}
           </p>
         </div>
 
@@ -34,15 +37,15 @@ const BrandShowcase = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
           <div className="animate-fade-in" style={{ animationDelay: "800ms" }}>
             <div className="text-4xl font-bold text-gold mb-2">50+</div>
-            <div className="text-white/80">Premium Brands</div>
+            <div className="text-white/80">{t("premiumBrandsCount")}</div>
           </div>
           <div className="animate-fade-in" style={{ animationDelay: "900ms" }}>
             <div className="text-4xl font-bold text-gold mb-2">1000+</div>
-            <div className="text-white/80">Professional Products</div>
+            <div className="text-white/80">{t("professionalProducts")}</div>
           </div>
           <div className="animate-fade-in" style={{ animationDelay: "1000ms" }}>
             <div className="text-4xl font-bold text-gold mb-2">15+</div>
-            <div className="text-white/80">Years of Excellence</div>
+            <div className="text-white/80">{t("yearsOfExcellence")}</div>
           </div>
         </div>
       </div>

@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2, ArrowLeft } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Link } from "react-router-dom";
 
 const Cart = () => {
   const { state, updateQuantity, removeItem, clearCart } = useCart();
+  const { t } = useLanguage();
 
   if (state.items.length === 0) {
     return (

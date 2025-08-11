@@ -142,6 +142,107 @@ const translations = {
     askQuestion: "Ask a question about our products...",
     send: "Send",
     chatbotGreeting: "Hi! I'm here to help you find the perfect musical equipment. What are you looking for?",
+    
+     // Footer Extended
+    companySlogan: "Your premier destination for professional musical instruments and audio equipment. Elevating musicians and producers worldwide since 2009.",
+    address: "123 Music Boulevard, Harmony City, HC 12345",
+    phone: "+1 (555) 123-KEYS",
+    footerEmail: "hello@aurumkeysound.com",
+    digitalPianos: "Digital Pianos",
+    footerSynthesizers: "Synthesizers",
+    footerAccessories: "Accessories",
+    newArrivals: "New Arrivals",
+    footerProducts: "Products",
+    footerSupport: "Support",
+    footerCustomerService: "Customer Service",
+    shippingInfo: "Shipping Info",
+    returnsExchanges: "Returns & Exchanges",
+    warranty: "Warranty",
+    faq: "FAQ",
+    footerCompany: "Company",
+    careers: "Careers",
+    press: "Press",
+    partnerships: "Partnerships",
+    privacyPolicy: "Privacy Policy",
+    termsOfService: "Terms of Service",
+    cookies: "Cookies",
+    allRightsReserved: "© 2024 Aurum Keys & Sound. All rights reserved.",
+    
+    // Featured Products Extended
+    featuredProductsExtended: "Featured Products",
+    handPickedInstruments: "Hand-picked instruments from the world's finest manufacturers",
+    viewAllProducts: "View All Products",
+    featured: "Featured",
+    viewDetails: "View Details",
+    off: "OFF",
+    
+    // Product Categories Extended
+    shopByCategoryExtended: "Shop by Category",
+    exploreCarefully: "Explore our carefully curated selection of premium musical instruments and professional audio equipment",
+    exploreCollectionExtended: "Explore Collection",
+    
+    // Brand Showcase Extended
+    premiumBrandsExtended: "Premium Brands",
+    worldRespectedManufacturers: "We partner with the world's most respected musical instrument manufacturers",
+    premiumBrandsCount: "Premium Brands",
+    professionalProducts: "Professional Products",
+    yearsOfExcellence: "Years of Excellence",
+    
+    // Newsletter
+    stayInHarmony: "Stay in Harmony",
+    newsletterDescription: "Be the first to know about new arrivals, exclusive deals, and professional insights from the world of premium musical instruments.",
+    enterEmailAddress: "Enter your email address",
+    exclusiveProductPreviews: "Exclusive product previews",
+    professionalTips: "Professional tips & tutorials",
+    vipDiscounts: "VIP member discounts",
+    
+    // Search Extended
+    searchProductsExtended: "Search Products",
+    searchForInstruments: "Search for instruments, brands, models...",
+    noProductsFound: "No products found for",
+    enterSearchTerm: "Enter a search term to find products",
+    
+    // Chatbot specific
+    melodyAI: "Melody AI",
+    yourMusicalGuide: "Your Musical Guide",
+    chooseOption: "Choose an option:",
+    showPianos: "Show me pianos and keyboards",
+    lookingForGuitars: "I'm looking for guitars",
+    whatDrums: "What drums do you have?",
+    showAllInstruments: "Show me all instruments",
+    beginnerAdvice: "I'm a beginner, what should I start with?",
+    featuredProductsQuestion: "What are your featured products?",
+    beginnerResponse: "For beginners, I recommend starting with: 🎹 Keyboard/Piano (great for music theory), 🎸 Acoustic Guitar (versatile and portable), or 🥁 Electronic Drums (volume control for practice). Each offers a solid foundation for musical learning!",
+    hello: "Hello! I'm Melody, your musical companion! 🎵 Choose from the options below to explore our amazing instruments:",
+    
+    // Explore Extended
+    exploreOurCollection: "Explore Our Collection",
+    discoverPremium: "Discover premium musical instruments and professional audio equipment from the world's finest manufacturers",
+    backToCategories: "Back to Categories",
+    keyboardsPianos: "Keyboards & Pianos",
+    premiumWeightedKey: "Premium weighted-key digital pianos and synthesizers",
+    guitarsExtended: "Guitars",
+    acousticElectric: "Acoustic, electric, and bass guitars from renowned brands",
+    drumsPercussion: "Drums & Percussion",
+    completeDrumSets: "Complete drum sets and percussion instruments",
+    professionalRecording: "Professional recording and mixing equipment",
+    casesStands: "Cases, stands, cables, and essential accessories",
+    
+    // Cart Extended
+    yourCartExtended: "Your Cart",
+    cartEmpty: "Your cart is empty",
+    backToShop: "Back to Shop",
+    shoppingCart: "Shopping Cart",
+    orderSummary: "Order Summary",
+    subtotal: "Subtotal",
+    itemsCount: "items",
+    shippingCost: "Shipping",
+    free: "Free",
+    proceedToCheckout: "Proceed to Checkout",
+    clearCart: "Clear Cart",
+    
+    // Back Button
+    goBack: "Go Back",
   },
   tr: {
     // Header
@@ -274,6 +375,107 @@ const translations = {
     askQuestion: "Ürünlerimiz hakkında soru sorun...",
     send: "Gönder",
     chatbotGreeting: "Merhaba! Mükemmel müzik ekipmanını bulmanızda size yardım etmek için buradayım. Ne arıyorsunuz?",
+    
+    // Footer Extended
+    companySlogan: "Profesyonel müzik aletleri ve ses ekipmanları için premier destinasyonunuz. 2009'dan beri dünya çapında müzisyenleri ve yapımcıları yükseltiyor.",
+    address: "123 Müzik Bulvarı, Harmony Şehri, HC 12345",
+    phone: "+1 (555) 123-KEYS",
+    footerEmail: "hello@aurumkeysound.com",
+    digitalPianos: "Dijital Piyanolar",
+    footerSynthesizers: "Synthesizer'lar",
+    footerAccessories: "Aksesuarlar",
+    newArrivals: "Yeni Gelenler",
+    footerProducts: "Ürünler",
+    footerSupport: "Destek",
+    footerCustomerService: "Müşteri Hizmetleri",
+    shippingInfo: "Kargo Bilgisi",
+    returnsExchanges: "İade ve Değişim",
+    warranty: "Garanti",
+    faq: "Sık Sorulan Sorular",
+    footerCompany: "Şirket",
+    careers: "Kariyer",
+    press: "Basın",
+    partnerships: "Ortaklıklar",
+    privacyPolicy: "Gizlilik Politikası",
+    termsOfService: "Hizmet Şartları",
+    cookies: "Çerezler",
+    allRightsReserved: "© 2024 Aurum Keys & Sound. Tüm hakları saklıdır.",
+    
+    // Featured Products Extended
+    featuredProductsExtended: "Öne Çıkan Ürünler",
+    handPickedInstruments: "Dünyanın en iyi üreticilerinden özenle seçilmiş enstrümanlar",
+    viewAllProducts: "Tüm Ürünleri Gör",
+    featured: "Öne Çıkan",
+    viewDetails: "Detayları Gör",
+    off: "İNDİRİM",
+    
+    // Product Categories Extended
+    shopByCategoryExtended: "Kategoriye Göre Alışveriş",
+    exploreCarefully: "Özenle seçilmiş premium müzik aletleri ve profesyonel ses ekipmanları koleksiyonumuzu keşfedin",
+    exploreCollectionExtended: "Koleksiyonu Keşfet",
+    
+    // Brand Showcase Extended
+    premiumBrandsExtended: "Premium Markalar",
+    worldRespectedManufacturers: "Dünyanın en saygın müzik aleti üreticileriyle ortaklık kuruyoruz",
+    premiumBrandsCount: "Premium Marka",
+    professionalProducts: "Profesyonel Ürün",
+    yearsOfExcellence: "Yıllık Mükemmellik",
+    
+    // Newsletter
+    stayInHarmony: "Harmoni İçinde Kalın",
+    newsletterDescription: "Yeni varışlar, özel fırsatlar ve premium müzik aletleri dünyasından profesyonel içgörüler hakkında ilk siz haberdar olun.",
+    enterEmailAddress: "E-posta adresinizi girin",
+    exclusiveProductPreviews: "Özel ürün önizlemeleri",
+    professionalTips: "Profesyonel ipuçları ve eğitimler",
+    vipDiscounts: "VIP üye indirimleri",
+    
+    // Search Extended
+    searchProductsExtended: "Ürün Ara",
+    searchForInstruments: "Enstrüman, marka, model ara...",
+    noProductsFound: "için ürün bulunamadı",
+    enterSearchTerm: "Ürün aramak için bir terim girin",
+    
+    // Chatbot specific
+    melodyAI: "Melody AI",
+    yourMusicalGuide: "Müzikal Rehberiniz",
+    chooseOption: "Bir seçenek seçin:",
+    showPianos: "Piyano ve klavyeleri göster",
+    lookingForGuitars: "Gitar arıyorum",
+    whatDrums: "Hangi davullarınız var?",
+    showAllInstruments: "Tüm enstrümanları göster",
+    beginnerAdvice: "Yeni başlayıcıyım, neyle başlamalıyım?",
+    featuredProductsQuestion: "Öne çıkan ürünleriniz neler?",
+    beginnerResponse: "Yeni başlayanlar için şunları öneriyorum: 🎹 Klavye/Piyano (müzik teorisi için harika), 🎸 Akustik Gitar (çok yönlü ve taşınabilir), veya 🥁 Elektronik Davul (pratik için ses kontrolü). Her biri müzik öğrenimi için sağlam bir temel sunar!",
+    hello: "Merhaba! Ben Melody, müzikal arkadaşınız! 🎵 Harika enstrümanlarımızı keşfetmek için aşağıdaki seçeneklerden birini seçin:",
+    
+    // Explore Extended
+    exploreOurCollection: "Koleksiyonumuzu Keşfedin",
+    discoverPremium: "Dünyanın en iyi üreticilerinden premium müzik aletleri ve profesyonel ses ekipmanları keşfedin",
+    backToCategories: "Kategorilere Geri Dön",
+    keyboardsPianos: "Klavyeler ve Piyanolar",
+    premiumWeightedKey: "Premium ağırlıklı tuşlu dijital piyanolar ve synthesizer'lar",
+    guitarsExtended: "Gitarlar",
+    acousticElectric: "Ünlü markalardan akustik, elektrik ve bas gitarlar",
+    drumsPercussion: "Davul ve Perküsyon",
+    completeDrumSets: "Komple davul setleri ve perküsyon enstrümanları",
+    professionalRecording: "Profesyonel kayıt ve miksleme ekipmanları",
+    casesStands: "Kılıflar, standlar, kablolar ve temel aksesuarlar",
+    
+    // Cart Extended
+    yourCartExtended: "Sepetiniz",
+    cartEmpty: "Sepetiniz boş",
+    backToShop: "Mağazaya Dön",
+    shoppingCart: "Alışveriş Sepeti",
+    orderSummary: "Sipariş Özeti",
+    subtotal: "Ara Toplam",
+    itemsCount: "ürün",
+    shippingCost: "Kargo",
+    free: "Ücretsiz",
+    proceedToCheckout: "Ödemeye Geç",
+    clearCart: "Sepeti Temizle",
+    
+    // Back Button
+    goBack: "Geri Git",
   }
 };
 

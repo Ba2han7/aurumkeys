@@ -1,6 +1,7 @@
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface BackButtonProps {
   label?: string;
@@ -9,8 +10,10 @@ interface BackButtonProps {
   className?: string;
 }
 
-const BackButton = ({ label = "Go Back", variant = "outline", onClick, className }: BackButtonProps) => {
+const BackButton = ({ label, variant = "outline", onClick, className }: BackButtonProps) => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
+  const defaultLabel = label || t("goBack");
 
   const handleClick = () => {
     if (onClick) {
@@ -27,7 +30,7 @@ const BackButton = ({ label = "Go Back", variant = "outline", onClick, className
       className={`inline-flex items-center gap-2 ${className || ''}`}
     >
       <ArrowLeft className="h-4 w-4" />
-      {label}
+      {defaultLabel}
     </Button>
   );
 };

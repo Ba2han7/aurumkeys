@@ -3,12 +3,14 @@ import { Star, Heart, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useNavigate } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
+import { useLanguage } from "@/contexts/LanguageContext";
 import premiumKeyboard from "@/assets/premium-keyboard.jpg";
 import audioEquipment from "@/assets/audio-equipment.jpg";
 
 const FeaturedProducts = () => {
   const { addItem } = useCart();
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { data: products = [], isLoading, error } = useProducts(undefined, true);
 
   // Fallback products if no data from DB
@@ -93,10 +95,10 @@ const FeaturedProducts = () => {
         <div className="flex items-center justify-between mb-16">
           <div>
             <h2 className="text-4xl md:text-5xl font-serif font-bold text-dark mb-4">
-              Featured Products
+              {t("featuredProductsExtended")}
             </h2>
             <p className="text-xl text-muted-foreground">
-              Hand-picked instruments from the world's finest manufacturers
+              {t("handPickedInstruments")}
             </p>
           </div>
           <Button 
@@ -104,7 +106,7 @@ const FeaturedProducts = () => {
             className="hidden md:block hover-lift"
             onClick={() => navigate('/explore')}
           >
-            View All Products
+            {t("viewAllProducts")}
           </Button>
         </div>
 
@@ -133,11 +135,11 @@ const FeaturedProducts = () => {
                 <div className="absolute top-4 left-4">
                   {product.discount_percentage && product.discount_percentage > 0 ? (
                     <span className="px-3 py-1 rounded-full text-xs font-bold bg-red-500 text-white">
-                      {product.discount_percentage}% OFF
+                      {product.discount_percentage}% {t("off")}
                     </span>
                   ) : (
                     <span className="px-3 py-1 rounded-full text-xs font-bold bg-gold text-dark">
-                      Featured
+                      {t("featured")}
                     </span>
                   )}
                 </div>
@@ -158,7 +160,7 @@ const FeaturedProducts = () => {
                     className="transform scale-95 group-hover:scale-100 transition-transform duration-300"
                     onClick={() => navigate(`/product/${product.slug}`)}
                   >
-                    View Details
+                    {t("viewDetails")}
                   </Button>
                 </div>
               </div>
@@ -216,7 +218,7 @@ const FeaturedProducts = () => {
                   className="w-full"
                   onClick={() => handleAddToCart(product)}
                 >
-                  Add to Cart
+                  {t("addToCart")}
                 </Button>
               </div>
             </div>
@@ -230,7 +232,7 @@ const FeaturedProducts = () => {
             className="hover-lift"
             onClick={() => navigate('/explore')}
           >
-            View All Products
+            {t("viewAllProducts")}
           </Button>
         </div>
       </div>

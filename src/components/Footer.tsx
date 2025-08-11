@@ -1,35 +1,38 @@
 import { Facebook, Instagram, Twitter, Youtube, Mail, Phone, MapPin } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Footer = () => {
+  const { t } = useLanguage();
+  
   const footerSections = [
     {
-      title: "Products",
+      title: t("footerProducts"),
       links: [
-        "Digital Pianos",
-        "Synthesizers",
-        "Audio Equipment",
-        "Accessories",
-        "New Arrivals",
+        t("digitalPianos"),
+        t("footerSynthesizers"),
+        t("audioEquipment"),
+        t("footerAccessories"),
+        t("newArrivals"),
       ],
     },
     {
-      title: "Support",
+      title: t("footerSupport"),
       links: [
-        "Customer Service",
-        "Shipping Info",
-        "Returns & Exchanges",
-        "Warranty",
-        "FAQ",
+        t("footerCustomerService"),
+        t("shippingInfo"),
+        t("returnsExchanges"),
+        t("warranty"),
+        t("faq"),
       ],
     },
     {
-      title: "Company",
+      title: t("footerCompany"),
       links: [
-        "About Us",
-        "Careers",
-        "Press",
-        "Partnerships",
-        "Contact",
+        t("aboutUs"),
+        t("careers"),
+        t("press"),
+        t("partnerships"),
+        t("contact"),
       ],
     },
   ];
@@ -46,22 +49,21 @@ const Footer = () => {
               <span className="block text-lg font-normal tracking-wider text-gold">KEYS & SOUND</span>
             </h3>
             <p className="text-white/80 mb-6 max-w-md">
-              Your premier destination for professional musical instruments and audio equipment. 
-              Elevating musicians and producers worldwide since 2009.
+              {t("companySlogan")}
             </p>
             
             <div className="space-y-3 mb-6">
               <div className="flex items-center gap-3 text-white/80">
                 <MapPin className="h-5 w-5 text-gold" />
-                <span>123 Music Boulevard, Harmony City, HC 12345</span>
+                <span>{t("address")}</span>
               </div>
               <div className="flex items-center gap-3 text-white/80">
                 <Phone className="h-5 w-5 text-gold" />
-                <span>+1 (555) 123-KEYS</span>
+                <span>{t("phone")}</span>
               </div>
               <div className="flex items-center gap-3 text-white/80">
                 <Mail className="h-5 w-5 text-gold" />
-                <span>hello@aurumkeysound.com</span>
+                <span>{t("footerEmail")}</span>
               </div>
             </div>
 
@@ -103,17 +105,17 @@ const Footer = () => {
         <div className="py-8 border-t border-white/10">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <div className="text-white/60 text-sm">
-              © 2024 Aurum Keys & Sound. All rights reserved.
+              {t("allRightsReserved")}
             </div>
             <div className="flex gap-6 text-sm">
               <a href="#" className="text-white/60 hover:text-gold transition-colors duration-300">
-                Privacy Policy
+                {t("privacyPolicy")}
               </a>
               <a href="#" className="text-white/60 hover:text-gold transition-colors duration-300">
-                Terms of Service
+                {t("termsOfService")}
               </a>
               <a href="#" className="text-white/60 hover:text-gold transition-colors duration-300">
-                Cookies
+                {t("cookies")}
               </a>
             </div>
           </div>

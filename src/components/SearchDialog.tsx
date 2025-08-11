@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useSearch } from "@/hooks/useSearch";
 import { useCart } from "@/contexts/CartContext";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface SearchDialogProps {
   open: boolean;
@@ -13,6 +14,7 @@ interface SearchDialogProps {
 
 const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
   const [query, setQuery] = useState('');
+  const { t } = useLanguage();
   const { searchResults, isLoading, startSearch } = useSearch();
   const { addItem } = useCart();
 
@@ -39,28 +41,28 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Search className="h-5 w-5" />
-            Search Products
+            {t("searchProductsExtended")}
           </DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSearch} className="flex gap-2 mb-4">
           <Input
             type="text"
-            placeholder="Search for instruments, brands, models..."
+            placeholder={t("searchForInstruments")}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             className="flex-1"
             autoFocus
           />
           <Button type="submit" variant="premium">
-            Search
+            {t("search")}
           </Button>
         </form>
 
         <div className="overflow-y-auto max-h-96">
           {isLoading ? (
             <div className="text-center py-8 text-muted-foreground">
-              Searching...
+              {t("searching")}
             </div>
           ) : searchResults.length > 0 ? (
             <div className="space-y-4">
@@ -88,18 +90,18 @@ const SearchDialog = ({ open, onOpenChange }: SearchDialogProps) => {
                     size="sm"
                     onClick={() => handleAddToCart(product)}
                   >
-                    Add to Cart
+                    {t("addToCart")}
                   </Button>
                 </div>
               ))}
             </div>
           ) : query ? (
             <div className="text-center py-8 text-muted-foreground">
-              No products found for "{query}"
+              {t("noProductsFound")} "{query}"
             </div>
           ) : (
             <div className="text-center py-8 text-muted-foreground">
-              Enter a search term to find products
+              {t("enterSearchTerm")}
             </div>
           )}
         </div>

@@ -1,12 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useCategories } from "@/hooks/useCategories";
+import { useLanguage } from "@/contexts/LanguageContext";
 import { Loader2 } from "lucide-react";
 import premiumKeyboard from "@/assets/premium-keyboard.jpg";
 import audioEquipment from "@/assets/audio-equipment.jpg";
 
 const ProductCategories = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const { data: dbCategories = [], isLoading } = useCategories();
   
   // Fallback categories if no data from DB
@@ -64,10 +66,10 @@ const ProductCategories = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-dark mb-6">
-            Shop by Category
+            {t("shopByCategoryExtended")}
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Explore our carefully curated selection of premium musical instruments and professional audio equipment
+            {t("exploreCarefully")}
           </p>
           <Button 
             variant="premium" 
@@ -75,7 +77,7 @@ const ProductCategories = () => {
             onClick={() => navigate('/explore')}
             className="hover-lift"
           >
-            Explore Collection
+            {t("exploreCollectionExtended")}
           </Button>
         </div>
 
@@ -109,7 +111,7 @@ const ProductCategories = () => {
                     size="sm" 
                     className="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
                   >
-                    View {category.name}
+                    {t("viewAll")} {category.name}
                   </Button>
                 </div>
               </div>

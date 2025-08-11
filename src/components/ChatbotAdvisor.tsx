@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MessageCircle, X } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLanguage } from "@/contexts/LanguageContext";
 import chatbotLogo from "@/assets/chatbot-logo.jpg";
 
 interface Message {
@@ -13,11 +14,12 @@ interface Message {
 }
 
 const ChatbotAdvisor = () => {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hello! I'm Melody, your musical companion! 🎵 Choose from the options below to explore our amazing instruments:",
+      text: t("hello"),
       isUser: false,
       timestamp: new Date(),
     },

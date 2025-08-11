@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Star, Heart, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useProducts, useCategories } from "@/hooks/useProducts";
+import { useLanguage } from "@/contexts/LanguageContext";
 import BackButton from "@/components/BackButton";
 import premiumKeyboard from "@/assets/premium-keyboard.jpg";
 import audioEquipment from "@/assets/audio-equipment.jpg";
@@ -19,6 +20,7 @@ const Explore = () => {
   const { addItem } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useLanguage();
   const { data: categories = [], isLoading: categoriesLoading } = useCategories();
   const { data: products = [], isLoading: productsLoading } = useProducts(selectedCategory || undefined);
 
