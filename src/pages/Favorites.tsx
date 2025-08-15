@@ -3,9 +3,11 @@ import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackButton from "@/components/BackButton";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Favorites = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   return (
     <div className="min-h-screen">
@@ -17,13 +19,13 @@ const Favorites = () => {
 
         <div className="text-center py-24">
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-dark mb-4">
-            Favorites Feature Disabled
+            {t("favoritesFeatureDisabled")}
           </h1>
           <p className="text-xl text-muted-foreground mb-8">
-            The favorites feature has been temporarily disabled. Please explore our amazing collection of instruments instead.
+            {t("favoritesTemporarilyDisabled")}
           </p>
           <Button onClick={() => navigate('/explore')} variant="premium">
-            Explore Products
+            {t("exploreProducts")}
           </Button>
         </div>
       </main>

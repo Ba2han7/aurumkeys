@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -17,6 +18,7 @@ const Auth = () => {
   
   const { signIn, signUp, user } = useAuth();
   const { toast } = useToast();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
@@ -39,8 +41,8 @@ const Auth = () => {
     e.preventDefault();
     if (!email || !password) {
       toast({
-        title: "Error",
-        description: "Please fill in all fields",
+        title: t("error"),
+        description: t("pleaseFileAllFields"),
         variant: "destructive",
       });
       return;
@@ -51,14 +53,14 @@ const Auth = () => {
     
     if (error) {
       toast({
-        title: "Sign In Failed",
+        title: t("signInFailed"),
         description: error.message,
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Welcome back!",
-        description: "You have been signed in successfully.",
+        title: t("welcomeBack"),
+        description: t("signInSuccessfully"),
       });
       navigate('/');
     }
@@ -69,8 +71,8 @@ const Auth = () => {
     e.preventDefault();
     if (!email || !password || !displayName) {
       toast({
-        title: "Error",
-        description: "Please fill in all fields",
+        title: t("error"),
+        description: t("pleaseFileAllFields"),
         variant: "destructive",
       });
       return;
@@ -78,8 +80,8 @@ const Auth = () => {
 
     if (password.length < 6) {
       toast({
-        title: "Error",
-        description: "Password must be at least 6 characters long",
+        title: t("error"),
+        description: t("passwordMustBe6"),
         variant: "destructive",
       });
       return;
@@ -91,22 +93,22 @@ const Auth = () => {
     if (error) {
       if (error.message.includes('already registered')) {
         toast({
-          title: "Account exists",
-          description: "An account with this email already exists. Please sign in instead.",
+          title: t("accountExists"),
+          description: t("accountAlreadyExists"),
           variant: "destructive",
         });
         setActiveTab('signin');
       } else {
         toast({
-          title: "Sign Up Failed",
+          title: t("signUpFailed"),
           description: error.message,
           variant: "destructive",
         });
       }
     } else {
       toast({
-        title: "Account created!",
-        description: "Please check your email to verify your account.",
+        title: t("accountCreated"),
+        description: t("checkEmailToVerify"),
       });
     }
     setIsLoading(false);
@@ -118,42 +120,42 @@ const Auth = () => {
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-serif text-dark">AURUM</CardTitle>
           <CardDescription>
-            Welcome to Aurum Keys & Sound
+            {t("welcomeToAurum")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Sign In</TabsTrigger>
-              <TabsTrigger value="signup">Sign Up</TabsTrigger>
+              <TabsTrigger value="signin">{t("signIn")}</TabsTrigger>
+              <TabsTrigger value="signup">{t("signUp")}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signin-email">Email</Label>
+                  <Label htmlFor="signin-email">{t("email")}</Label>
                   <Input
                     id="signin-email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder={t("enterYourEmail")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signin-password">Password</Label>
+                  <Label htmlFor="signin-password">{t("password")}</Label>
                   <Input
                     id="signin-password"
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder={t("enterYourPassword")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Signing In...' : 'Sign In'}
+                  {isLoading ? t("signingIn") : t("signIn")}
                 </Button>
               </form>
             </TabsContent>
@@ -161,33 +163,33 @@ const Auth = () => {
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name">Display Name</Label>
+                  <Label htmlFor="signup-name">{t("displayName")}</Label>
                   <Input
                     id="signup-name"
                     type="text"
-                    placeholder="Enter your name"
+                    placeholder={t("enterYourName")}
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
+                  <Label htmlFor="signup-email">{t("email")}</Label>
                   <Input
                     id="signup-email"
                     type="email"
-                    placeholder="Enter your email"
+                    placeholder={t("enterYourEmail")}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
+                  <Label htmlFor="signup-password">{t("password")}</Label>
                   <Input
                     id="signup-password"
                     type="password"
-                    placeholder="Create a password (min. 6 characters)"
+                    placeholder={t("createPassword")}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
@@ -195,7 +197,7 @@ const Auth = () => {
                   />
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Creating Account...' : 'Create Account'}
+                  {isLoading ? t("creatingAccount") : t("createAccount")}
                 </Button>
               </form>
             </TabsContent>

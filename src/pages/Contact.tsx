@@ -9,8 +9,10 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import BackButton from "@/components/BackButton";
 import { toast } from "sonner";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const Contact = () => {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,24 +22,24 @@ const Contact = () => {
 
   const teamEmails = [
     {
-      name: "Sales Team",
-      email: "sales@aurum.com",
-      description: "Product inquiries and orders"
+      name: t("salesTeam"),
+      email: t("salesEmail"),
+      description: t("productInquiriesOrders")
     },
     {
-      name: "Support Team",
-      email: "support@aurum.com",
-      description: "Technical support and assistance"
+      name: t("supportTeam"),
+      email: t("supportEmail"),
+      description: t("technicalSupportAssistance")
     },
     {
-      name: "Management",
-      email: "admin@aurum.com",
-      description: "General inquiries and partnerships"
+      name: t("management"),
+      email: t("adminEmail"),
+      description: t("generalInquiriesPartnerships")
     },
     {
-      name: "Returns & Exchanges",
-      email: "returns@aurum.com",
-      description: "Product returns and exchanges"
+      name: t("returnsExchanges"),
+      email: t("returnsEmail"),
+      description: t("productReturnsExchanges")
     }
   ];
 
@@ -52,7 +54,7 @@ const Contact = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Here you would typically send the form data to your backend
-    toast.success("Message sent successfully! We'll get back to you soon.");
+    toast.success(t("messageSentSuccessfully"));
     setFormData({
       name: "",
       email: "",
@@ -67,9 +69,9 @@ const Contact = () => {
       <div className="container mx-auto px-4 pt-24 pb-12">
         <div className="mb-8">
           <BackButton />
-          <h1 className="text-4xl font-bold text-dark mt-4 mb-2">Contact Us</h1>
+          <h1 className="text-4xl font-bold text-dark mt-4 mb-2">{t("contactUs")}</h1>
           <p className="text-muted-foreground text-lg">
-            Get in touch with our team for any questions or support
+            {t("getInTouchContact")}
           </p>
         </div>
 
@@ -79,59 +81,59 @@ const Contact = () => {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageSquare className="h-5 w-5" />
-                Send us a Message
+                {t("sendUsMessage")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="name">Full Name</Label>
+                    <Label htmlFor="name">{t("fullName")}</Label>
                     <Input
                       id="name"
                       name="name"
                       type="text"
                       value={formData.name}
                       onChange={handleInputChange}
-                      placeholder="Your full name"
+                      placeholder={t("yourFullName")}
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="email">Email Address</Label>
+                    <Label htmlFor="email">{t("emailAddress")}</Label>
                     <Input
                       id="email"
                       name="email"
                       type="email"
                       value={formData.email}
                       onChange={handleInputChange}
-                      placeholder="your.email@example.com"
+                      placeholder={t("yourEmailExample")}
                       required
                     />
                   </div>
                 </div>
                 
                 <div>
-                  <Label htmlFor="subject">Subject</Label>
+                  <Label htmlFor="subject">{t("subject")}</Label>
                   <Input
                     id="subject"
                     name="subject"
                     type="text"
                     value={formData.subject}
                     onChange={handleInputChange}
-                    placeholder="What is this regarding?"
+                    placeholder={t("whatIsThisRegarding")}
                     required
                   />
                 </div>
                 
                 <div>
-                  <Label htmlFor="message">Message</Label>
+                  <Label htmlFor="message">{t("message")}</Label>
                   <Textarea
                     id="message"
                     name="message"
                     value={formData.message}
                     onChange={handleInputChange}
-                    placeholder="Tell us how we can help you..."
+                    placeholder={t("tellUsHowWeCanHelp")}
                     rows={6}
                     required
                   />
@@ -139,7 +141,7 @@ const Contact = () => {
                 
                 <Button type="submit" className="w-full">
                   <Send className="h-4 w-4 mr-2" />
-                  Send Message
+                  {t("sendMessage")}
                 </Button>
               </form>
             </CardContent>
@@ -150,32 +152,31 @@ const Contact = () => {
             {/* Contact Info */}
             <Card>
               <CardHeader>
-                <CardTitle>Get in Touch</CardTitle>
+                <CardTitle>{t("getInTouchTitle")}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-3">
                   <Mail className="h-5 w-5 text-gold" />
                   <div>
-                    <p className="font-medium">Email</p>
-                    <p className="text-muted-foreground">info@aurum.com</p>
+                    <p className="font-medium">{t("email")}</p>
+                    <p className="text-muted-foreground">{t("infoEmail")}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <Phone className="h-5 w-5 text-gold" />
                   <div>
-                    <p className="font-medium">Phone</p>
-                    <p className="text-muted-foreground">+1 (555) 123-4567</p>
+                    <p className="font-medium">{t("phone")}</p>
+                    <p className="text-muted-foreground">{t("phoneNumber")}</p>
                   </div>
                 </div>
                 
                 <div className="flex items-center gap-3">
                   <MapPin className="h-5 w-5 text-gold" />
                   <div>
-                    <p className="font-medium">Address</p>
+                    <p className="font-medium">{t("address")}</p>
                     <p className="text-muted-foreground">
-                      123 Music Street<br />
-                      Harmony City, HC 12345
+                      {t("businessAddress")}
                     </p>
                   </div>
                 </div>
@@ -185,9 +186,9 @@ const Contact = () => {
             {/* Team Emails */}
             <Card>
               <CardHeader>
-                <CardTitle>Team Contact</CardTitle>
+                <CardTitle>{t("teamContact")}</CardTitle>
                 <p className="text-muted-foreground text-sm">
-                  Reach out to specific departments for faster assistance
+                  {t("reachOutToSpecific")}
                 </p>
               </CardHeader>
               <CardContent>
@@ -218,21 +219,21 @@ const Contact = () => {
             {/* Business Hours */}
             <Card>
               <CardHeader>
-                <CardTitle>Business Hours</CardTitle>
+                <CardTitle>{t("businessHours")}</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <span>Monday - Friday</span>
-                    <span className="text-muted-foreground">9:00 AM - 6:00 PM</span>
+                    <span>{t("mondayFriday")}</span>
+                    <span className="text-muted-foreground">{t("nineSix")}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Saturday</span>
-                    <span className="text-muted-foreground">10:00 AM - 4:00 PM</span>
+                    <span>{t("saturday")}</span>
+                    <span className="text-muted-foreground">{t("tenFour")}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>Sunday</span>
-                    <span className="text-muted-foreground">Closed</span>
+                    <span>{t("sunday")}</span>
+                    <span className="text-muted-foreground">{t("closed")}</span>
                   </div>
                 </div>
               </CardContent>
